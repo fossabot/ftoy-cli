@@ -4,7 +4,7 @@
   "description": "The CLI tool for toy-system.",
   "preferGlobal": true,
   "bin": {
-    "ftoy": "./bin/ftoy"
+    "ftoy": "./bin/ftoy.js"
   },
   "engines": {
     "node": ">=8.0"
@@ -15,8 +15,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc -w",
-    "prepare": "npm run build"
+    "build:w": "tsc -w"
   },
   "keywords": [],
   "author": {
@@ -25,15 +24,20 @@
   },
   "license": "ISC",
   "devDependencies": {
+    "@types/debug": "0.0.31",
     "@types/inquirer": "^0.0.43",
     "@types/node": "^10.12.0",
     "@types/ora": "^1.3.4",
-    "@types/pino": "^5.6.1"
+    "@types/pino": "^5.6.1",
+    "@types/yargs": "^12.0.1",
+    "debug": "^4.1.0",
+    "typescript": "^3.1.3"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "inquirer": "^6.2.0",
     "ora": "^3.0.0",
     "pino": "^5.8.0",
-    "typescript": "^3.1.3"
+    "yargs": "^12.0.2"
   }
 }

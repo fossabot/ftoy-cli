@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-'use strict';
+"use strict";
 
 try {
-    process.title = Array.from(process.argv).join(' ');
+    process.title = Array.from(process.argv).join(" ");
 } catch (_) {
-    process.title = 'ftoy-cli';
+    process.title = "ftoy-cli";
 }
 
-const [v1, v2, v3] = process.version.substr(1).split('.');
+const [v1, v2, v3] = process.version.substr(1).split(".");
 
 if (Number(v1) < 8) {
     process.stderr.write(
@@ -16,5 +16,5 @@ if (Number(v1) < 8) {
     );
     process.exit();
 } else {
-    // TODO
+    require("../lib/register");
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"release.js","sourceRoot":"","sources":["../../src/commands/release.ts"],"names":[],"mappings":";;AAGA,MAAM,CAAC,OAAO,GAAG;IACf,OAAO,EAAE,CAAC,IAAI,CAAC;IACf,OAAO,EAAE,SAAS;IAClB,QAAQ,EAAE,MAAM;IAChB,OAAO,EAAE,GAAG,EAAE;IAEd,CAAC;CACe,CAAC"}

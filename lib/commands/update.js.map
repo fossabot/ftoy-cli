@@ -1,0 +1,1 @@
+{"version":3,"file":"update.js","sourceRoot":"","sources":["../../src/commands/update.ts"],"names":[],"mappings":";;AAGA,MAAM,CAAC,OAAO,GAAG;IACf,OAAO,EAAE,CAAC,GAAG,CAAC;IACd,OAAO,EAAE,QAAQ;IACjB,QAAQ,EAAE,WAAW;IACrB,OAAO,EAAE,CAAC,IAAI,EAAE,EAAE;IAElB,CAAC;CACe,CAAC"}
