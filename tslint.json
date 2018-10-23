@@ -6,7 +6,10 @@
     "jsRules": {},
     "rules": {
         "no-var-requires": false,
-        "semicolon": true
+        "semicolon": true,
+        "object-literal-sort-keys": false
     },
-    "rulesDirectory": []
+    "rulesDirectory": [
+
+    ]
 }

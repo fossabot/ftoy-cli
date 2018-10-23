@@ -1,16 +1,17 @@
 import Axios, { AxiosError, AxiosResponse } from "axios";
-import { execSync } from "child_process";
+import { ExecOptions, ExecSyncOptionsWithStringEncoding } from "child_process";
 import { Command } from "./command";
 
-export default class Git {
+export class Git {
   /**
    * 判断 git 命令是否存在
    *
    * @readonly
    * @static
+   * @returns {boolean}
    * @memberof Git
    */
-  public static get isExisted() {
+  public static get isExisted(): boolean {
     return Command.has("git");
   }
 
@@ -23,33 +24,28 @@ export default class Git {
    *     dist = "",           复制生成文件夹名称
    *     branch = "master",   复制分支名称
    * }={}]
-   * @returns {Promise<any>}  返回结果
+   * @returns {Promise<string>}  返回结果
    * @memberof Git
    */
-  public static async clone({
-    url = "",
-    dist = "",
-    branch = "master",
-  } = {}): Promise<any> {
+  public static clone({ url = "", dist = "", branch = "master" } = {}): Promise<
+    string
+  > {
     if (!url) {
       throw Error("The argument `url` is required.");
-    } else if (!(await Git.isExisted)) {
+    }
+
+    if (!Git.isExisted) {
       throw Error(
         "请确保 Git 已正确安装。了解更多信息前往 https://git-scm.com/",
       );
     } else {
-      return new Promise((resolve, reject) => {
-        const cmd = `git clone --depth 1 --single-branch -b ${branch} ${url} ${dist}`;
-        try {
-          const res = execSync(cmd, {
-            encoding: "utf8",
-            stdio: [null, null, 2],
-          });
-          resolve(res);
-        } catch (err) {
-          reject(err.message);
-        }
-      });
+      return Command.execp(
+        `git clone --depth 1 --single-branch -b ${branch} ${url} ${dist}`,
+        {
+          encoding: "utf8",
+          stdio: [null, null, null],
+        },
+      );
     }
   }
 
@@ -59,13 +55,13 @@ export default class Git {
    * @static
    * @param {string} name 仓库名
    * @param {*} [{ namespace_id = 14777, visibility = "internal" }={}] 配置参数
-   * @returns {Promise<void>}
+   * @returns {Promise<string>}
    * @memberof Git
    */
-  public static async create(
+  public static create(
     name: string,
     { namespace_id = 14777, visibility = "internal" } = {},
-  ): Promise<string | object> {
+  ): Promise<string> {
     if (!name) {
       throw Error("The argument `name` is required.");
     } else {
@@ -83,7 +79,54 @@ export default class Git {
         },
       )
         .then((res: AxiosResponse) => res.data)
-        .catch((res: AxiosError) => Promise.reject(res));
+        .catch((err: AxiosError) => Promise.reject(err.message));
     }
+  }
+
+  public static async commit(
+    message = "",
+    options = {} as ExecSyncOptionsWithStringEncoding,
+  ): Promise<boolean> {
+    if (!message) {
+      throw Error("The argument `message` is required.");
+    }
+
+    if (!Git.isClean(options)) {
+      await Command.execp(`git add .`, options);
+      await Command.execp(`git commit -a -m "${message}"`, options);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public static async push({
+    origin = "origin",
+    branch = "master",
+    options = {} as ExecSyncOptionsWithStringEncoding,
+  } = {}): Promise<string> {
+    await Git.commit("Auto commit by ftoy-cli.", options);
+    return Command.execp(`git push ${origin} ${branch}`, options);
+  }
+
+  public static isClean(
+    options = {} as ExecSyncOptionsWithStringEncoding,
+  ): boolean {
+    try {
+      const res = Command.exec("git status -s", options);
+      return !res;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  public static async setRemoteUrl(
+    url: string,
+    options = {} as ExecSyncOptionsWithStringEncoding,
+  ) {
+    if (!url) {
+      throw Error("The argument `url` is required.");
+    }
+    return Command.execp(`git remote set-url origin ${url}`, options);
   }
 }
