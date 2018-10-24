@@ -1,11 +1,9 @@
 import { Command } from "./command";
 
-export default class NodePackageManager {
+export class NodePackageManager {
   public static MANAGERS = ["yarn", "cnpm", "npm"];
 
   public static get managersCanUse(): string[] {
-    return NodePackageManager.MANAGERS.filter(
-      async (cmd) => await Command.has(cmd),
-    );
+    return NodePackageManager.MANAGERS.filter((cmd) => Command.has(cmd));
   }
 }

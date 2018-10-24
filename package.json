@@ -52,8 +52,18 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/test/.*|(\\.|/)(spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
     "collectCoverage": true,
-    "testPathIgnorePatterns": ["/lib/", "/node_modules/"]
+    "testPathIgnorePatterns": [
+      "/lib/",
+      "/node_modules/"
+    ]
   }
 }
