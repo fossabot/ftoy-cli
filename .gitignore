@@ -1,5 +1,6 @@
 temp/
 coverage/
+lib/
 
 .DS_Store
 node_modules/

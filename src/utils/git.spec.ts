@@ -87,4 +87,8 @@ describe("[utils] Git", () => {
       })(),
     ).resolves.toBe(true);
   });
+
+  test("[SUCCESS] getRepoName", () => {
+    expect(Git.getRepoName()).resolves.toBe("ftoy-cli");
+  });
 });

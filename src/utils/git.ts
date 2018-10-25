@@ -3,12 +3,21 @@ import { ExecSyncOptionsWithStringEncoding } from "child_process";
 import { Command } from "./command";
 
 export class Git {
+  /**
+   * 初始化项目
+   *
+   * @static
+   * @param {ExecSyncOptionsWithStringEncoding} [options={ encoding: "utf8" }]
+   * @returns {Promise<string>}
+   * @memberof Git
+   */
   public static init(
     options: ExecSyncOptionsWithStringEncoding = { encoding: "utf8" },
   ): Promise<string> {
     Command.exec("rm -rf .git", options);
     return Command.execp("git init", options);
   }
+
   /**
    * 从远程仓库克隆项目
    *
@@ -212,5 +221,34 @@ export class Git {
       throw Error("The argument `url` is required.");
     }
     return Command.execp(`git remote add origin ${url}`, options);
+  }
+
+  public static getRemoteUrl(
+    options = { encoding: "utf8" } as ExecSyncOptionsWithStringEncoding,
+  ) {
+    // TODO
+  }
+
+  public static getRepoName(
+    options = { encoding: "utf8" } as ExecSyncOptionsWithStringEncoding,
+  ) {
+    return Command.execp("git remote -v", options)
+      .then((stdout) => {
+        const reg = /(?:\/)(.*?)(?:\.git)?$/;
+
+        const res = stdout
+          .split(/[\r\n]/)
+          .filter((e) => e && e.includes("origin"))
+          .map((e) =>
+            e
+              .split(/\s/)
+              .filter((c) => /(http|git@)/.test(c))
+              .pop(),
+          )
+          .map((url = "") => url.match(reg) && RegExp.$1.split("/").pop());
+
+        return Array.from(new Set(res)).pop();
+      })
+      .catch((e) => "");
   }
 }
