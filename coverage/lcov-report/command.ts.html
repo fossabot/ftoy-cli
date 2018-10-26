@@ -20,28 +20,28 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">50% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>9/18</span>
+        <span class='fraction'>18/18</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">20% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>2/10</span>
+        <span class='fraction'>10/10</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>3/4</span>
+        <span class='fraction'>4/4</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">50% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>9/18</span>
+        <span class='fraction'>18/18</span>
       </div>
     </div>
   </div>
-  <div class='status-line medium'></div>
+  <div class='status-line high'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet">1
 2
@@ -92,32 +92,20 @@
 47
 48
 49
-50</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+50</td><td class="line-coverage quiet"><span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -127,15 +115,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -148,25 +148,25 @@
 } from "child_process";
 &nbsp;
 export class Command {
-  public <span class="fstat-no" title="function not covered" >static</span> has(command: string, { testArg = <span class="branch-0 cbranch-no" title="branch not covered" >"--version" </span>} = <span class="branch-0 cbranch-no" title="branch not covered" >{})</span>: boolean {
-<span class="cstat-no" title="statement not covered" >    if (!command) {</span>
-<span class="cstat-no" title="statement not covered" >      throw Error("The argument `command` is required.");</span>
+  public static has(command: string, { testArg = "--version" } = {}): boolean {
+    if (!command) {
+      throw Error("The argument `command` is required.");
     } else {
-<span class="cstat-no" title="statement not covered" >      try {</span>
-<span class="cstat-no" title="statement not covered" >        execSync(`${command} ${testArg}`, { encoding: "utf8" });</span>
-<span class="cstat-no" title="statement not covered" >        return true;</span>
+      try {
+        execSync(`${command} ${testArg}`, { encoding: "utf8" });
+        return true;
       } catch (e) {
-<span class="cstat-no" title="statement not covered" >        return false;</span>
+        return false;
       }
     }
   }
 &nbsp;
   public static exec(
     command: string,
-    config = <span class="branch-0 cbranch-no" title="branch not covered" >{} as ExecSyncOptionsWithStringEncoding,</span>
+    config = {} as ExecSyncOptionsWithStringEncoding,
   ): string {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!command) {
-<span class="cstat-no" title="statement not covered" >      throw Error("The argument `command` is required.");</span>
+    if (!command) {
+      throw Error("The argument `command` is required.");
     } else {
       return execSync(command, config);
     }
@@ -174,17 +174,17 @@ export class Command {
 &nbsp;
   public static execp(
     command: string,
-    config = <span class="branch-0 cbranch-no" title="branch not covered" >{} as ExecSyncOptionsWithStringEncoding,</span>
+    config = {} as ExecSyncOptionsWithStringEncoding,
   ): Promise&lt;string&gt; {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!command) {
-<span class="cstat-no" title="statement not covered" >      throw Error("The argument `command` is required.");</span>
+    if (!command) {
+      throw Error("The argument `command` is required.");
     } else {
       return new Promise((resovle, reject) =&gt; {
         try {
           const res = Command.exec(command, config);
           resovle(res);
         } catch (err) {
-<span class="cstat-no" title="statement not covered" >          reject(err.message);</span>
+          reject(err.message);
         }
       });
     }
@@ -196,7 +196,7 @@ export class Command {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Oct 25 2018 18:19:38 GMT+0800 (CST)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Fri Oct 26 2018 18:01:01 GMT+0800 (CST)
 </div>
 </div>
 <script src="prettify.js"></script>

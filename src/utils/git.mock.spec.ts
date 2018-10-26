@@ -83,25 +83,4 @@ describe("[utils] Git (mock)", () => {
     });
     expect(Git.create("test")).rejects.toEqual(MOCK_MESSAGE);
   });
-
-  test("[ERROR] delete", () => {
-    expect(() => Git.delete("", "")).toThrowError();
-    expect(() => Git.delete("test", "")).toThrowError();
-    expect(() => Git.delete("", "test")).toThrowError();
-  });
-
-  test("[SUCCESS] delete", () => {
-    (Axios.delete as jest.Mock<any>).mockResolvedValueOnce({
-      message: "202 Accepted",
-    });
-    expect(Git.delete("ftoy-cli", "test")).resolves.toHaveProperty("message");
-  });
-
-  test("[FAILED] delete", () => {
-    const MOCK_MESSAGE = "TEST";
-    (Axios.delete as jest.Mock<any>).mockRejectedValueOnce({
-      message: MOCK_MESSAGE,
-    });
-    expect(Git.delete("test", "test")).rejects.toEqual(MOCK_MESSAGE);
-  });
 });

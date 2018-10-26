@@ -13,9 +13,10 @@ export class Git {
    */
   public static init(
     options: ExecSyncOptionsWithStringEncoding = { encoding: "utf8" },
-  ): Promise<string> {
+  ): boolean {
     Command.exec("rm -rf .git", options);
-    return Command.execp("git init", options);
+    Command.exec("git init", options);
+    return true;
   }
 
   /**
@@ -84,32 +85,6 @@ export class Git {
   }
 
   /**
-   * 删除远程仓库
-   *
-   * @static
-   * @param {string} namespace 群组名
-   * @param {string} name 项目名
-   * @returns {Promise<string>}
-   * @memberof Git
-   */
-  public static delete(namespace: string, name: string): Promise<string> {
-    if (!name) {
-      throw Error("The argument `name` is required.");
-    } else if (!namespace) {
-      throw Error("The argument `namespace` is required.");
-    } else {
-      const project = encodeURIComponent([namespace, name].join("/"));
-      return Axios.delete(`http://igit.58corp.com/api/v4/projects/${project}`, {
-        headers: {
-          "Private-Token": "qoHG4AJeyv9BGR8wC9VC",
-        },
-      })
-        .then((res: AxiosResponse) => res.data)
-        .catch((err: AxiosError) => Promise.reject(err.message));
-    }
-  }
-
-  /**
    * 获取项目信息
    *
    * @static
@@ -147,17 +122,17 @@ export class Git {
    * @returns {Promise<boolean>}
    * @memberof Git
    */
-  public static async commit(
+  public static commit(
     message = "",
     options = {} as ExecSyncOptionsWithStringEncoding,
-  ): Promise<boolean> {
+  ): boolean {
     if (!message) {
       throw Error("The argument `message` is required.");
     }
 
     if (!Git.isClean(options)) {
-      await Command.execp(`git add .`, options);
-      await Command.execp(`git commit -a -m "${message}"`, options);
+      Command.exec(`git add .`, options);
+      Command.exec(`git commit -a -m "${message}"`, options);
       return true;
     } else {
       return false;
@@ -181,7 +156,7 @@ export class Git {
     branch = "master",
     options = {} as ExecSyncOptionsWithStringEncoding,
   } = {}): Promise<string> {
-    await Git.commit("Auto commit by ftoy-cli.", options);
+    await Git.commit("Commit via ftoy-cli", options);
     return Command.execp(`git push ${origin} ${branch}`, options);
   }
 
@@ -223,20 +198,20 @@ export class Git {
     return Command.execp(`git remote add origin ${url}`, options);
   }
 
+  /**
+   * 获取远程仓库 URL
+   *
+   * @static
+   * @param {string} [options={ encoding: "utf8" } as ExecSyncOptionsWithStringEncoding]
+   * @returns {Promise<string>}
+   * @memberof Git
+   */
   public static getRemoteUrl(
     options = { encoding: "utf8" } as ExecSyncOptionsWithStringEncoding,
-  ) {
-    // TODO
-  }
-
-  public static getRepoName(
-    options = { encoding: "utf8" } as ExecSyncOptionsWithStringEncoding,
-  ) {
-    return Command.execp("git remote -v", options)
-      .then((stdout) => {
-        const reg = /(?:\/)(.*?)(?:\.git)?$/;
-
-        const res = stdout
+  ): Promise<string> {
+    return Command.execp("git remote -v", options).then(
+      (stdout) => {
+        const res: any[] = stdout
           .split(/[\r\n]/)
           .filter((e) => e && e.includes("origin"))
           .map((e) =>
@@ -244,11 +219,38 @@ export class Git {
               .split(/\s/)
               .filter((c) => /(http|git@)/.test(c))
               .pop(),
-          )
-          .map((url = "") => url.match(reg) && RegExp.$1.split("/").pop());
+          );
 
-        return Array.from(new Set(res)).pop();
-      })
-      .catch((e) => "");
+        return Array.from(new Set(res)).pop() || Promise.reject("");
+      },
+      () => Promise.reject(""),
+    );
+  }
+
+  /**
+   * 获取仓库名称
+   *
+   * @static
+   * @param {string} [options={ encoding: "utf8" } as ExecSyncOptionsWithStringEncoding]
+   * @returns {Promise<string>}
+   * @memberof Git
+   */
+  public static getRepoName(
+    options = {
+      encoding: "utf8",
+      stdio: [null, null, null],
+    } as ExecSyncOptionsWithStringEncoding,
+  ): Promise<string> {
+    return Git.getRemoteUrl(options).then<string>(
+      (remoteUrl) => {
+        const reg = /(?:\/)(.*?)(?:\.git)?$/;
+        if (remoteUrl.match(reg)) {
+          return RegExp.$1.split("/").pop() || Promise.reject("");
+        } else {
+          return Promise.reject("");
+        }
+      },
+      () => Promise.reject(""),
+    );
   }
 }

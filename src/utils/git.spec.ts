@@ -3,92 +3,123 @@ import { readdirSync } from "fs";
 import { Command } from "./command";
 import { Git } from "./git";
 
+const TEMP_DIR = "temp";
+
 describe("[utils] Git", () => {
-  test("[ERROR] clone", () => {
-    expect(() => Git.clone()).toThrowError(/required/);
+  describe("clone", () => {
+    test("[ERROR]", () => {
+      expect(() => Git.clone()).toThrowError(/required/);
+    });
+
+    test("[SUCCESS]", async () => {
+      Command.exec(`rm -rf ${TEMP_DIR}`);
+      const action = Git.clone({
+        dist: TEMP_DIR,
+        url: "https://github.com/ChenShihao/ftoy-cli-test.git",
+      });
+      expect(action).resolves.toBeDefined();
+
+      const result = readdirSync(TEMP_DIR, "utf8");
+      expect(result).toContain("README.md");
+    });
+
+    test("[FAILED]", () => {
+      Command.exec(`mkdir -p ${TEMP_DIR}`);
+      const result = Git.clone({
+        dist: TEMP_DIR,
+        url: "https://github.com/ChenShihao/ftoy-cli-test.git",
+      });
+      expect(result).rejects.toBeDefined();
+    });
   });
 
-  test("[SUCCESS] clone", () => {
-    expect(
-      (async () => {
-        const TEMP_DIR = "temp";
-        Command.exec(`rm -rf ${TEMP_DIR}`);
-        await Git.clone({
-          dist: TEMP_DIR,
-          url: "http://igit.58corp.com/ftoy-cli/toy-starter-normal.git",
-        });
-        return readdirSync(TEMP_DIR, "utf8");
-      })(),
-    ).resolves.toContain("package.json");
-  });
-
-  test("[FAILED] clone", () => {
-    expect(
-      (async () => {
-        const TEMP_DIR = "temp";
-        await Git.clone({
-          dist: TEMP_DIR,
-          url: "",
-        });
-      })(),
-    ).rejects.toBeTruthy();
-  });
-
-  test("[ERROR] info", () => {
-    expect(() => Git.info("", "")).toThrowError();
-    expect(() => Git.info("test", "")).toThrowError();
-    expect(() => Git.info("", "test")).toThrowError();
-  });
-
-  test("[SUCCESS] info", () => {
-    expect(Git.info("ftoy-cli", "test")).resolves.toHaveProperty("id");
-  });
-
-  test("[FAILED] info", () => {
-    expect(Git.info("ftoy-cli", "test")).rejects.toBeTruthy();
-  });
-
-  test("[ERROR] commit", () => {
-    expect(
-      Git.commit("", {
+  describe("init", () => {
+    test("[SUCCESS]", async () => {
+      const result = Git.init({
+        cwd: TEMP_DIR,
         encoding: "utf8",
-        cwd: "temp",
-      }),
-    ).rejects.toBeInstanceOf(Error);
+      });
+      expect(result).toBe(true);
+    });
   });
 
-  test("[EMPTY] commit", () => {
-    expect(
-      (async () => {
-        const options: ExecSyncOptionsWithStringEncoding = {
-          encoding: "utf8",
-          cwd: "temp",
-        };
-        Command.exec("git add .", options);
-        Command.exec("git reset --hard", options);
-        return Git.commit("Run for jest. [EMPTY]", options);
-      })(),
-    ).resolves.toBe(false);
+  describe("info", () => {
+    test("[ERROR]", () => {
+      expect(() => Git.info("", "")).toThrowError();
+      expect(() => Git.info("test", "")).toThrowError();
+      expect(() => Git.info("", "test")).toThrowError();
+    });
+
+    test("[SUCCESS]", () => {
+      const result = Git.info("ftoy-cli", "test");
+      expect(result).resolves.toHaveProperty("id");
+    });
+
+    test("[FAILED]", () => {
+      const result = Git.info("ftoy-cli", "_____");
+      expect(result).rejects.toBeTruthy();
+    });
   });
 
-  test("[SUCCESS] commit", () => {
-    expect(
-      (async () => {
-        const TEMP_DIR = "temp";
+  describe("commit", () => {
+    test("[ERROR]", () => {
+      expect(() => Git.commit("")).toThrowError();
+    });
 
-        await Command.execp(`echo jest > jest.${Date.now()}.md`, {
-          encoding: "utf8",
-          cwd: TEMP_DIR,
-        });
-        return Git.commit("Run for jest. [SUCCESS]", {
-          encoding: "utf8",
-          cwd: TEMP_DIR,
-        });
-      })(),
-    ).resolves.toBe(true);
+    test("[EMPTY]", () => {
+      const options: ExecSyncOptionsWithStringEncoding = {
+        encoding: "utf8",
+        cwd: TEMP_DIR,
+      };
+      Command.exec("git add .", options);
+      Command.exec("git reset --hard", options);
+      const result = Git.commit("[EMPTY]", options);
+      expect(result).toBe(false);
+    });
+
+    test("[SUCCESS]", () => {
+      const options: ExecSyncOptionsWithStringEncoding = {
+        encoding: "utf8",
+        cwd: TEMP_DIR,
+      };
+      Command.exec(
+        `echo "${Date.now().toLocaleString()} \t Jest test." >> README.md`,
+        options,
+      );
+      const result = Git.commit("Commit via Jest", options);
+      expect(result).toBe(true);
+    });
   });
 
-  test("[SUCCESS] getRepoName", () => {
-    expect(Git.getRepoName()).resolves.toBe("ftoy-cli");
+  describe("getRepoName", () => {
+    test("[SUCCESS] ", async () => {
+      const result = await Git.getRepoName();
+      expect(result).toBe("ftoy-cli");
+    });
+
+    test("[FAILED]", () => {
+      const result = Git.getRepoName({
+        cwd: "..",
+        encoding: "utf8",
+        stdio: [null, null, null],
+      });
+      expect(result).rejects.toBe("");
+    });
+  });
+
+  describe("getRemoteUrl", () => {
+    test("[SUCCESS]", async () => {
+      const result = await Git.getRemoteUrl();
+      expect(result).toBe("git@github.com:ChenShihao/ftoy-cli.git");
+    });
+
+    test("[FAILED]", () => {
+      const result = Git.getRemoteUrl({
+        cwd: "..",
+        encoding: "utf8",
+        stdio: [null, null, null],
+      });
+      expect(result).rejects.toBe("");
+    });
   });
 });

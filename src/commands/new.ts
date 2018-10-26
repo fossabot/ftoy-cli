@@ -52,7 +52,7 @@ module.exports = {
           ],
         });
         if (!go) {
-          throw new Error(`Git 仓库中已存在 ${gitName} 项目`);
+          process.exit();
         }
       } else {
         spinner.start("正在创建仓库...");
@@ -91,7 +91,7 @@ module.exports = {
 
       spinner.start("正在初始化信息...");
       await Git.init(options);
-      await Git.commit("Auto commit by ftoy-cli.", options);
+      await Git.commit("Commit via ftoy-cli", options);
       if (sshUrl) {
         spinner.start("正在推送代码...");
         await Git.setRemoteUrl(sshUrl, options);
