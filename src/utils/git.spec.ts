@@ -1,6 +1,7 @@
 import { ExecSyncOptionsWithStringEncoding } from "child_process";
 import { readdirSync } from "fs";
 import { Command } from "./command";
+import { Directory } from "./directory";
 import { Git } from "./git";
 
 const TEMP_DIR = "temp";
@@ -12,7 +13,7 @@ describe("[utils] Git", () => {
     });
 
     test("[SUCCESS]", async () => {
-      Command.exec(`rm -rf ${TEMP_DIR}`);
+      Directory.rm(TEMP_DIR);
       const action = Git.clone({
         dist: TEMP_DIR,
         url: "https://github.com/ChenShihao/ftoy-cli-test.git",

@@ -1,23 +1,65 @@
-import { readdirSync, statSync } from "fs";
+import { resolve } from "path";
+import { cp, rm, test as shellTest } from "shelljs";
 
 export class Directory {
+  /**
+   * 判断文件(夹)是否存在
+   *
+   * @static
+   * @param {string} name 文件(夹)路径
+   * @param {string} [type="all" as "file" | "dir" | "all"] 类型
+   * @returns {boolean}
+   * @memberof Directory
+   */
   public static exist(
     name: string,
-    { dir = "." as string, type = "all" as "file" | "dir" | "all" } = {},
-  ) {
+    type = "all" as "file" | "dir" | "all",
+  ): boolean {
     if (!name) {
       throw Error("The argument `name` is required.");
     } else {
-      let files = readdirSync(dir, { encoding: "utf8" });
+      const target = resolve(name);
       switch (type) {
         case "file":
-          files = files.filter((file) => statSync(file).isFile());
-          break;
+          return shellTest("-f", target);
         case "dir":
-          files = files.filter((file) => statSync(file).isDirectory());
-          break;
+          return shellTest("-d", target);
+        default:
+          return shellTest("-e", target);
       }
-      return files.includes(name);
+    }
+  }
+
+  /**
+   * 删除文件(夹)
+   *
+   * @static
+   * @param {string} name 文件(夹)路径
+   * @memberof Directory
+   */
+  public static delete(name: string): void {
+    if (!name) {
+      throw Error("The argument `name` is required.");
+    } else {
+      rm("-rf", resolve(name));
+    }
+  }
+
+  /**
+   * 复制文件(夹)
+   *
+   * @static
+   * @param {string} from   起
+   * @param {string} to     止
+   * @memberof Directory
+   */
+  public static copy(from: string, to: string): void {
+    if (!from) {
+      throw Error("The argument `from` is required.");
+    } else if (!to) {
+      throw Error("The argument `to` is required.");
+    } else {
+      cp("-r", resolve(from), resolve(to));
     }
   }
 }

@@ -3,7 +3,8 @@ import * as Debug from "debug";
 import { prompt } from "inquirer";
 import * as ora from "ora";
 import { CommandModule } from "yargs";
-import { Command } from "../utils/command";
+import { TMP_PROJECT_DIR } from "../const";
+import { cacheProject } from "../utils/cache";
 import { Directory } from "../utils/directory";
 import { Git } from "../utils/git";
 
@@ -12,8 +13,8 @@ const debug = Debug("[Command] new");
 module.exports = {
   aliases: ["n"],
   command: "new",
-  describe: "创建新组件项目",
-  handler: async (argv) => {
+  describe: "创建项目",
+  handler: async () => {
     const namespace = "ftoy-cli";
     const spinner = ora();
     const { gitName = "" }: any = await prompt({
@@ -61,12 +62,12 @@ module.exports = {
       }
 
       spinner.start("正在克隆仓库...");
-      if (Directory.exist(gitName, { type: "dir" })) {
+      if (Directory.exist(gitName, "dir")) {
         spinner.stop();
         const { canDelete }: any = await prompt({
           type: "list",
           message: `当前目录下已存在 ${gitName} 文件夹，是否删除？`,
-          name: "canDelete",
+          name: "canBeDeleted",
           choices: [
             {
               value: true,
@@ -79,15 +80,15 @@ module.exports = {
           ],
         });
         if (canDelete) {
-          Command.exec(`rm -rf ${gitName}`);
+          Directory.delete(gitName);
         } else {
-          throw new Error(`请删除文件夹 ${gitName} 后重新执行该命令`);
+          throw new Error(`请删除文件夹 ${gitName} 后重新执行操作`);
         }
       }
-      await Git.clone({
-        dist: gitName,
-        url: "http://igit.58corp.com/ftoy-cli/toy-starter-normal.git",
-      });
+
+      if (!Directory.exist(TMP_PROJECT_DIR)) {
+        cacheProject();
+      }
 
       spinner.start("正在初始化信息...");
       await Git.init(options);

@@ -2,7 +2,7 @@ import Axios, { AxiosResponse } from "axios";
 import * as Debug from "debug";
 import { readdirSync, statSync } from "fs";
 import { prompt } from "inquirer";
-import ora = require("ora");
+import * as ora from "ora";
 import { join, resolve } from "path";
 import { CommandModule } from "yargs";
 import { IComponent } from "../interface/IComponent";
@@ -44,7 +44,7 @@ module.exports = {
         });
 
       if (!allComponents || !allComponents.length) {
-        spinner.info("当前项目中组件列表为空，请开发相应组件进行发布");
+        spinner.info("当前项目中组件列表为空");
         process.exit();
       }
 

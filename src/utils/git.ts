@@ -13,10 +13,8 @@ export class Git {
    */
   public static init(
     options: ExecSyncOptionsWithStringEncoding = { encoding: "utf8" },
-  ): boolean {
-    Command.exec("rm -rf .git", options);
+  ): void {
     Command.exec("git init", options);
-    return true;
   }
 
   /**
@@ -31,9 +29,13 @@ export class Git {
    * @returns {Promise<string>}  返回结果
    * @memberof Git
    */
-  public static clone({ url = "", dist = "", branch = "master" } = {}): Promise<
-    string
-  > {
+  public static clone(
+    { url, dist = "", branch = "master" } = {} as {
+      url: string;
+      dist?: string;
+      branch?: string;
+    },
+  ): Promise<string> {
     if (!url) {
       throw Error("The argument `url` is required.");
     }

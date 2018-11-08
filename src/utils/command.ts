@@ -1,23 +1,6 @@
-import {
-  execSync,
-  ExecSyncOptions,
-  ExecSyncOptionsWithStringEncoding,
-} from "child_process";
+import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 
 export class Command {
-  public static has(command: string, { testArg = "--version" } = {}): boolean {
-    if (!command) {
-      throw Error("The argument `command` is required.");
-    } else {
-      try {
-        execSync(`${command} ${testArg}`, { encoding: "utf8" });
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-  }
-
   public static exec(
     command: string,
     config = {} as ExecSyncOptionsWithStringEncoding,

@@ -1,16 +1,6 @@
 import { Command } from "./command";
 
 describe("[utils] Command", () => {
-  test("[ERROR] has", async () => {
-    expect(() => Command.has("")).toThrowError(/required/);
-  });
-  test("[SUCCESS] has", async () => {
-    expect(await Command.has("node")).toBe(true);
-  });
-  test("[FAILED] has", async () => {
-    expect(await Command.has("edon")).toBe(false);
-  });
-
   test("[ERROR] execp", async () => {
     expect(() => Command.execp("")).toThrowError(/required/);
   });
