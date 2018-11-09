@@ -1,4 +1,5 @@
 import * as Debug from "debug";
+import { resolve } from "path";
 import {
   COMPONENT_GIT_URL,
   PROJECT_GIT_URL,
@@ -18,6 +19,7 @@ export async function cacheProject() {
     dist: TMP_PROJECT_DIR,
     url: PROJECT_GIT_URL,
   });
+  Directory.delete(resolve(TMP_PROJECT_DIR, ".git"));
 }
 
 export async function cacheComponent() {
@@ -28,6 +30,7 @@ export async function cacheComponent() {
     dist: TMP_COMPONENT_DIR,
     url: COMPONENT_GIT_URL,
   });
+  Directory.delete(resolve(TMP_COMPONENT_DIR, ".git"));
 }
 
 export function cleanCache() {

@@ -59,7 +59,7 @@ export class Directory {
     } else if (!to) {
       throw Error("The argument `to` is required.");
     } else {
-      cp("-r", resolve(from), resolve(to));
+      cp("-R", resolve(from), resolve(to));
     }
   }
 }

@@ -48,7 +48,7 @@ module.exports = {
           break;
       }
     } catch (msg) {
-      spinner.fail().stopAndPersist({ text: msg, symbol: "✖" });
+      spinner.fail().stopAndPersist({ text: msg || "出现错误", symbol: "✖" });
       debug(msg);
       process.exit();
     }
