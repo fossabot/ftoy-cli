@@ -3,7 +3,10 @@ import { execSync, ExecSyncOptionsWithStringEncoding } from "child_process";
 export class Command {
   public static exec(
     command: string,
-    config = {} as ExecSyncOptionsWithStringEncoding,
+    config = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
   ): string {
     if (!command) {
       throw Error("The argument `command` is required.");
@@ -14,7 +17,10 @@ export class Command {
 
   public static execp(
     command: string,
-    config = {} as ExecSyncOptionsWithStringEncoding,
+    config = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
   ): Promise<string> {
     if (!command) {
       throw Error("The argument `command` is required.");

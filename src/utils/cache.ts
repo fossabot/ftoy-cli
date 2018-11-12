@@ -12,8 +12,9 @@ import { Git } from "./git";
 
 const debug = Debug("[Utils] cache");
 
-export async function cacheProject() {
+export async function cacheProjects() {
   debug(TMP_PROJECT_DIR);
+
   Directory.delete(TMP_PROJECT_DIR);
   await Git.clone({
     dist: TMP_PROJECT_DIR,
@@ -22,7 +23,7 @@ export async function cacheProject() {
   Directory.delete(resolve(TMP_PROJECT_DIR, ".git"));
 }
 
-export async function cacheComponent() {
+export async function cacheComponents() {
   debug(TMP_COMPONENT_DIR);
 
   Directory.delete(TMP_COMPONENT_DIR);

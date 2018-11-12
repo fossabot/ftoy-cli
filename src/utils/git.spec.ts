@@ -75,7 +75,7 @@ describe("[utils] Git", () => {
       Command.exec("git add .", options);
       Command.exec("git reset --hard", options);
       const result = Git.commit("[EMPTY]", options);
-      expect(result).toBe(false);
+      expect(result).toBeUndefined();
     });
 
     test("[SUCCESS]", () => {
@@ -88,7 +88,7 @@ describe("[utils] Git", () => {
         options,
       );
       const result = Git.commit("Commit via Jest", options);
-      expect(result).toBe(true);
+      expect(result).toBeUndefined();
     });
   });
 

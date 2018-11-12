@@ -12,7 +12,10 @@ export class Git {
    * @memberof Git
    */
   public static init(
-    options: ExecSyncOptionsWithStringEncoding = { encoding: "utf8" },
+    options = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
   ): void {
     Command.exec("git init", options);
   }
@@ -62,7 +65,7 @@ export class Git {
     name: string,
     {
       namespace_id = 14777, // TODO
-      visibility = "private" as "private" | "internal" | "public",
+      visibility = "internal" as "private" | "internal" | "public",
     } = {},
   ): Promise<string> {
     if (!name) {
@@ -120,24 +123,26 @@ export class Git {
    *
    * @static
    * @param {string} [message=""] 提交信息
-   * @param {*} [options={} as ExecSyncOptionsWithStringEncoding] 执行参数
+   * @param {*} [options = {
+   *   stdio: [null, null, null],
+   *   encoding: "utf8",
+   * } as ExecSyncOptionsWithStringEncoding] 执行参数
    * @returns {Promise<boolean>}
    * @memberof Git
    */
   public static commit(
     message = "",
-    options = {} as ExecSyncOptionsWithStringEncoding,
-  ): boolean {
+    options = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
+  ): void {
     if (!message) {
       throw Error("The argument `message` is required.");
     }
-
     if (!Git.isClean(options)) {
       Command.exec(`git add .`, options);
       Command.exec(`git commit -a -m "${message}"`, options);
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -148,30 +153,42 @@ export class Git {
    * @param {*} [{
    *     origin = "origin",
    *     branch = "master",
-   *     options = {} as ExecSyncOptionsWithStringEncoding,
+   *     options = {
+   *       stdio: [null, null, null],
+   *       encoding: "utf8",
+   *     } as ExecSyncOptionsWithStringEncoding,
    *   }={}]
    * @returns {Promise<string>}
    * @memberof Git
    */
-  public static async push({
+  public static push({
     origin = "origin",
     branch = "master",
-    options = {} as ExecSyncOptionsWithStringEncoding,
-  } = {}): Promise<string> {
-    await Git.commit("Commit via ftoy-cli", options);
-    return Command.execp(`git push ${origin} ${branch}`, options);
+    options = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
+  } = {}): void {
+    Git.commit("Commit via ftoy-cli", options);
+    Command.exec(`git push ${origin} ${branch}`, options);
   }
 
   /**
    * 判断工作区是否干净
    *
    * @static
-   * @param {*} [options={} as ExecSyncOptionsWithStringEncoding]
+   * @param {*} [options = {
+   *  stdio: [null, null, null],
+   *  encoding: "utf8",
+   * } as ExecSyncOptionsWithStringEncoding]
    * @returns {boolean}
    * @memberof Git
    */
   public static isClean(
-    options = {} as ExecSyncOptionsWithStringEncoding,
+    options = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
   ): boolean {
     try {
       const res = Command.exec("git status -s", options);
@@ -186,18 +203,24 @@ export class Git {
    *
    * @static
    * @param {string} url
-   * @param {*} [options={} as ExecSyncOptionsWithStringEncoding]
+   * @param {*} [options = {
+   *  stdio: [null, null, null],
+   *  encoding: "utf8",
+   * } as ExecSyncOptionsWithStringEncoding]
    * @returns
    * @memberof Git
    */
-  public static async setRemoteUrl(
+  public static setRemoteUrl(
     url: string,
-    options = {} as ExecSyncOptionsWithStringEncoding,
-  ) {
+    options = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
+  ): void {
     if (!url) {
       throw Error("The argument `url` is required.");
     }
-    return Command.execp(`git remote add origin ${url}`, options);
+    Command.exec(`git remote add origin ${url}`, options);
   }
 
   /**
@@ -209,7 +232,10 @@ export class Git {
    * @memberof Git
    */
   public static getRemoteUrl(
-    options = { encoding: "utf8" } as ExecSyncOptionsWithStringEncoding,
+    options = {
+      stdio: [null, null, null],
+      encoding: "utf8",
+    } as ExecSyncOptionsWithStringEncoding,
   ): Promise<string> {
     return Command.execp("git remote -v", options).then(
       (stdout) => {

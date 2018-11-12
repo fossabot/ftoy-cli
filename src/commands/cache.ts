@@ -2,7 +2,7 @@ import * as Debug from "debug";
 import { prompt } from "inquirer";
 import * as ora from "ora";
 import { CommandModule } from "yargs";
-import { cacheComponent, cacheProject, cleanCache } from "../utils/cache";
+import { cacheComponents, cacheProjects, cleanCache } from "../utils/cache";
 
 const debug = Debug("[Command] cache");
 
@@ -38,11 +38,11 @@ module.exports = {
         case "refresh":
           // 项目缓存
           spinner.start("正在更新项目缓存...");
-          await cacheProject();
+          await cacheProjects();
 
           // 组件缓存
           spinner.start("正在更新组件缓存...");
-          await cacheComponent();
+          await cacheComponents();
 
           spinner.succeed("更新缓存成功");
           break;
