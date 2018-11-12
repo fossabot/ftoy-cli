@@ -18,7 +18,7 @@ module.exports = {
     const namespace = "ftoy-cli";
     const spinner = ora();
     const { gitName = "" }: any = await prompt({
-      message: "请输入项目名称",
+      message: "请输入项目名称：",
       name: "gitName",
       validate: (name) => !!name || "项目名称不能为空哦",
     });
@@ -61,13 +61,12 @@ module.exports = {
         sshUrl = ssh_url_to_repo;
       }
 
-      spinner.start("正在克隆仓库...");
       if (Directory.exist(gitName, "dir")) {
         spinner.stop();
         const { canDelete }: any = await prompt({
           type: "list",
           message: `当前目录下已存在 ${gitName} 文件夹，是否删除？`,
-          name: "canBeDeleted",
+          name: "canDelete",
           choices: [
             {
               value: true,
@@ -86,9 +85,11 @@ module.exports = {
         }
       }
 
+      spinner.start("正在克隆仓库...");
       if (!Directory.exist(TMP_PROJECT_DIR)) {
         cacheProject();
       }
+      Directory.copy(TMP_PROJECT_DIR, gitName);
 
       spinner.start("正在初始化信息...");
       await Git.init(options);
@@ -99,9 +100,22 @@ module.exports = {
         await Git.push({ options });
       }
 
-      spinner.succeed(`项目创建成功！`);
+      spinner.succeed(`成功创建项目 ${gitName}\n`);
+
+      spinner.stopAndPersist({
+        symbol: "😎",
+        text: "开始你的组件开发吧！\n",
+      });
+      spinner.stopAndPersist({
+        symbol: "$",
+        text: `cd ${gitName}`,
+      });
+      spinner.stopAndPersist({
+        symbol: "$",
+        text: `ftoy generate`,
+      });
     } catch (msg) {
-      spinner.fail().stopAndPersist({ text: msg, symbol: "✖" });
+      spinner.fail().stopAndPersist({ text: msg || "出现错误", symbol: "✖" });
       debug(msg);
       process.exit();
     }

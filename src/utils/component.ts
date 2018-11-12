@@ -2,6 +2,16 @@ import Axios, { AxiosError, AxiosResponse } from "axios";
 import { IComponent } from "../interface/IComponent";
 
 export class Component {
+  public static async validateName(name: string): Promise<boolean> {
+    const { data: valid } = await Axios.post(
+      "http://ftoy.58corp.com/cli/name/validate",
+      {
+        name,
+      },
+    ).then((res: AxiosResponse) => res.data);
+    return valid;
+  }
+
   public config: IComponent;
 
   constructor(config: IComponent) {
