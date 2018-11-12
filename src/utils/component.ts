@@ -9,15 +9,15 @@ export class Component {
     const { data: isValid } = await Axios.post(
       "http://ftoy.58corp.com/cli/name/validate",
       {
-        name,
-      },
+        name
+      }
     ).then((res: AxiosResponse) => res.data);
     return isValid;
   }
 
   public static async getTypes(): Promise<IType[]> {
-    const { data } = await Axios.get(
-      "http://ftoy.58corp.com/category/list",
+    const { data = [] } = await Axios.get(
+      "http://ftoy.58corp.com/category/list"
     ).then((res: AxiosResponse) => res.data);
     return data;
   }
@@ -38,10 +38,10 @@ export class Component {
     } else {
       const map = {
         online: "http://ftoy.58corp.com/component/update",
-        test: `http://${Project.testServer}/component/update`,
+        test: `http://${Project.testServer}/component/update`
       };
       return Axios.post(map[env || "test"], {
-        component: this.config,
+        component: this.config
       })
         .then((res: AxiosResponse) => res.data)
         .catch((err: AxiosError) => Promise.reject(err.message));
