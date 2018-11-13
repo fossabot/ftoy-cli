@@ -24,45 +24,13 @@ module.exports = {
       if (!Project.isValid()) {
         spinner.info("当前目录似乎不符合项目规范，请确保处于组件项目根目录");
       } else {
-        const remoteUrl = await Git.getRemoteUrl().catch(() =>
-          Promise.reject("找不到远程地址，请确保当前仓库存在 [origin] 信息。"),
-        );
-        const repoName = await Git.getRepoName().catch(() =>
-          Promise.reject("找不到项目名称，请确保当前仓库存在 [origin] 信息。"),
-        );
-
         spinner.start("正在打包组件...");
         Component.bundle();
         Git.commit("Build via ftoy-cli.");
         Git.push();
 
         spinner.start("正在读取信息...");
-        let tmpPath: string;
-        const distDir = Project.distDir;
-        const componentDir = Project.componentDir;
-        const allComponents: IComponent[] = readdirSync(componentDir)
-          .filter((e) => statSync(resolve(componentDir, e)).isDirectory())
-          .filter((component) =>
-            Directory.exist(resolve(componentDir, component, "config.js")),
-          )
-          .map((component) => {
-            tmpPath = posix.join(distDir, component);
-            return resolve(componentDir, component, "config.js");
-          })
-          .map((configJs) => require(configJs))
-          .map((config: IComponent) => {
-            const versionFixed = config.version || "1.0.0";
-            return Object.assign(config, {
-              _id: config.name,
-              version: versionFixed,
-              gitname: repoName,
-              regname: config.name + versionFixed.split(".").join("-"),
-              giturl: remoteUrl,
-              path: tmpPath,
-              attributes: config.props.attributes.default(),
-            });
-          });
-        debug(allComponents);
+        const allComponents: IComponent[] = await Component.getAllComponents();
 
         if (!allComponents || !allComponents.length) {
           spinner.info("当前项目中组件列表为空");
@@ -74,11 +42,11 @@ module.exports = {
           type: "checkbox",
           name: "selectedComponents",
           message: "请选择你要发布的组件",
-          choices: allComponents.map((component) => ({
+          choices: allComponents.map(component => ({
             name: `${component.name} v${component.version}`,
-            value: component,
+            value: component
           })),
-          validate: (e) => e.length >= 1 || "至少选择一个组件",
+          validate: e => e.length >= 1 || "至少选择一个组件"
         });
         spinner.start("正在发布组件...");
         const results: Array<{
@@ -89,7 +57,7 @@ module.exports = {
           (selectedComponents as IComponent[]).map(
             async (selectedComponent: IComponent) => {
               return new Component(selectedComponent)
-                .release()
+                .release("online")
                 .then((data: any) => {
                   debug(data);
 
@@ -97,31 +65,31 @@ module.exports = {
                   return {
                     success: code === 0,
                     msg: code === 0 ? "" : "未知错误",
-                    component: selectedComponent,
+                    component: selectedComponent
                   };
                 })
-                .catch((msg) => {
+                .catch(msg => {
                   return {
                     success: false,
                     msg,
-                    component: selectedComponent,
+                    component: selectedComponent
                   };
                 });
-            },
-          ),
+            }
+          )
         );
         spinner.clear().stop();
 
         const logs = [
           ["状态", "类型", "名称", "简述", "版本号", "备注信息"],
-          ...results.map((result) => [
+          ...results.map(result => [
             result.success ? "成功" : "失败",
             result.component.type,
             result.component.name,
             result.component.label,
             result.component.version,
-            result.msg,
-          ]),
+            result.msg
+          ])
         ];
         process.stdout.write(generateTable(logs));
       }
@@ -130,5 +98,5 @@ module.exports = {
       debug(msg);
       process.exit();
     }
-  },
+  }
 } as CommandModule;
