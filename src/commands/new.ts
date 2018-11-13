@@ -1,7 +1,9 @@
 import { ExecSyncOptionsWithStringEncoding } from "child_process";
 import * as Debug from "debug";
+import { readFileSync, writeFileSync } from "fs";
 import { prompt } from "inquirer";
 import * as ora from "ora";
+import { resolve } from "path";
 import { pwd } from "shelljs";
 import { CommandModule } from "yargs";
 import { TMP_PROJECT_DIR } from "../const";
@@ -18,43 +20,56 @@ module.exports = {
   handler: async () => {
     const namespace = "ftoy-cli";
     const spinner = ora();
-    const { gitName = "" }: any = await prompt({
-      message: "请输入项目名称：",
-      name: "gitName",
-      validate: async (name) => {
-        if (!name) {
-          return "项目名称不能为空哦";
-        } else {
-          const canCreate: boolean = await Git.info(namespace, name).then(
-            () => false,
-            () => true,
-          );
-          if (!canCreate) {
-            return `远程仓库中已存在 ${name} 项目`;
-          } else if (Directory.exist(name, "dir")) {
-            return `当前目录 ${pwd()} 下已存在 ${name} 文件夹`;
-          } else {
-            return true;
-          }
-        }
-      },
-    });
-    const options: ExecSyncOptionsWithStringEncoding = {
-      encoding: "utf8" as BufferEncoding,
-      cwd: gitName as string,
-      stdio: [null, null, null],
-    };
     try {
+      const { projectName = "" }: any = await prompt({
+        message: "请输入项目名称：",
+        name: "projectName",
+        validate: async (name) => {
+          if (!name) {
+            return "项目名称不能为空哦";
+          } else {
+            const canCreate: boolean = await Git.info(namespace, name).then(
+              () => false,
+              () => true,
+            );
+            if (!canCreate) {
+              return `远程仓库中已存在 ${name} 项目`;
+            } else if (Directory.exist(name, "dir")) {
+              return `当前目录 ${pwd()} 下已存在 ${name} 文件夹`;
+            } else {
+              return true;
+            }
+          }
+        },
+      });
+      const { description = "" }: any = await prompt({
+        message: "请输入项目概述：",
+        name: "description",
+        validate: async (name) => !!name || "项目概述不能为空哦",
+      });
+      const options: ExecSyncOptionsWithStringEncoding = {
+        encoding: "utf8" as BufferEncoding,
+        cwd: projectName as string,
+        stdio: [null, null, null],
+      };
       spinner.start("正在创建仓库...");
-      const { ssh_url_to_repo }: any = await Git.create(gitName);
+      const { ssh_url_to_repo }: any = await Git.create(projectName, {
+        description,
+      });
 
       spinner.start("正在克隆仓库...");
       if (!Directory.exist(TMP_PROJECT_DIR)) {
         cacheProjects();
       }
-      Directory.copy(TMP_PROJECT_DIR, gitName);
+      Directory.copy(TMP_PROJECT_DIR, projectName);
 
-      spinner.start("正在初始化信息...");
+      spinner.start("正在更新信息...");
+      const configPath = resolve(projectName, "package.json");
+      const config = JSON.parse(readFileSync(configPath, "utf8"));
+      Object.assign(config, { name: projectName, description });
+      writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+
+      spinner.start("正在初始化仓库...");
       Git.init(options);
       Git.commit("Commit via ftoy-cli", options);
       if (ssh_url_to_repo) {
@@ -63,13 +78,13 @@ module.exports = {
         Git.push({ options });
       }
 
-      spinner.succeed(`成功创建项目 ${gitName}\n`);
+      spinner.succeed(`成功创建项目 ${projectName}\n`);
 
       spinner.stopAndPersist({
         symbol: "😎",
         text: "开始你的组件开发吧！\n",
       });
-      const commands = [`cd ${gitName}`, `npm i`, `ftoy generate`];
+      const commands = [`cd ${projectName}`, `npm i`, `ftoy generate`];
       commands.forEach((text) => {
         spinner.stopAndPersist({
           symbol: "$",

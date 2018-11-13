@@ -10,6 +10,7 @@ import { Component } from "../utils/component";
 import { Directory } from "../utils/directory";
 import { Git } from "../utils/git";
 import { Project } from "../utils/project";
+import { generateTable } from "../utils/table";
 
 const debug = Debug("[Command] release");
 
@@ -111,48 +112,18 @@ module.exports = {
         );
         spinner.clear().stop();
 
-        const successComponents = results.filter((e) => e.success);
-        if (successComponents && successComponents.length) {
-          const successLogs = [
-            "-".repeat(50),
-            "状态\t名称\t版本号",
-            "-".repeat(50),
-          ];
-          successComponents.forEach((result) => {
-            successLogs.push(
-              format(
-                "%s\t%s\t%s",
-                "成功",
-                result.component.name,
-                result.component.version,
-              ),
-            );
-          });
-          successLogs.push("-".repeat(50), "\n");
-          process.stdout.write(successLogs.join("\n"));
-        }
-
-        const failedComponents = results.filter((e) => !e.success);
-        if (failedComponents && failedComponents.length) {
-          const failedLogs = [
-            "-".repeat(50),
-            "状态\t名称\t版本号\t错误信息",
-            "-".repeat(50),
-          ];
-          failedComponents.forEach((result) => {
-            failedLogs.push(
-              format(
-                "%s\t%s\t%s\t%s",
-                "失败",
-                result.component.name,
-                result.component.version,
-                result.msg,
-              ),
-            );
-          });
-          failedLogs.push("-".repeat(50), "\n");
-          process.stdout.write(failedLogs.join("\n"));
-        }
+        const logs = [
+          ["状态", "类型", "名称", "简述", "版本号", "备注信息"],
+          ...results.map((result) => [
+            result.success ? "成功" : "失败",
+            result.component.type,
+            result.component.name,
+            result.component.label,
+            result.component.version,
+            result.msg,
+          ]),
+        ];
+        process.stdout.write(generateTable(logs));
       }
     } catch (msg) {
       spinner.fail().stopAndPersist({ text: msg || "出现错误", symbol: "✖" });

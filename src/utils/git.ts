@@ -65,6 +65,7 @@ export class Git {
     name: string,
     {
       namespace_id = 14777, // TODO
+      description = "Create via ftoy-cli.",
       visibility = "internal" as "private" | "internal" | "public",
     } = {},
   ): Promise<string> {
@@ -77,6 +78,7 @@ export class Git {
           name,
           namespace_id,
           visibility,
+          description,
         },
         {
           headers: {
@@ -151,13 +153,13 @@ export class Git {
    *
    * @static
    * @param {*} [{
-   *     origin = "origin",
-   *     branch = "master",
-   *     options = {
-   *       stdio: [null, null, null],
-   *       encoding: "utf8",
-   *     } as ExecSyncOptionsWithStringEncoding,
-   *   }={}]
+   *   origin = "origin",
+   *   branch = "master",
+   *   options = {
+   *     stdio: [null, null, null],
+   *     encoding: "utf8",
+   *   } as ExecSyncOptionsWithStringEncoding,
+   * } = {}]
    * @returns {Promise<string>}
    * @memberof Git
    */

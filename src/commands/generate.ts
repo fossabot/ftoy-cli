@@ -42,25 +42,25 @@ module.exports = {
                 return true;
               }
             }
-          }
+          },
         });
-        let types = await Component.getTypes() || [];
+        const types = await Component.getTypes() || [];
         const { componentType = "" }: any = await prompt({
           message: "请选择组件类型",
           name: "componentType",
           type: "list",
-          choices: types.map(e => ({
+          choices: types.map((e) => ({
             name: `${e.label} - ${[...e.value]
               .map((s: string, i: number) => (i === 0 ? s.toUpperCase() : s))
               .join("")}`,
-            value: e.value
+            value: e.value,
           })),
-          validate: type => type.length >= 1 || "请选择其中一项"
+          validate: (type) => type.length >= 1 || "请选择其中一项",
         });
         const { componentLabel = "" }: any = await prompt({
           message: "请输入组件简述（建议使用中文，用作组件展示）",
           name: "componentLabel",
-          validate: type => !!type || "组件简述不能为空哦"
+          validate: (type) => !!type || "组件简述不能为空哦",
         });
 
         spinner.start("正在克隆组件...");
@@ -77,16 +77,16 @@ module.exports = {
           configStrBefore,
           componentType,
           componentName,
-          componentLabel
+          componentLabel,
         );
         writeFileSync(configPath, configStrAfter, "utf8");
 
         spinner.succeed("组件创建成功！\n");
 
-        readdirSync(componentDist, "utf8").forEach(file => {
+        readdirSync(componentDist, "utf8").forEach((file) => {
           spinner.stopAndPersist({
             symbol: "CREATE",
-            text: join(componentDir, componentName, file)
+            text: join(componentDir, componentName, file),
           });
         });
       }
@@ -95,5 +95,5 @@ module.exports = {
       debug(msg);
       process.exit();
     }
-  }
+  },
 } as CommandModule;

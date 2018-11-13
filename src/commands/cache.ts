@@ -9,7 +9,7 @@ const debug = Debug("[Command] cache");
 module.exports = {
   aliases: ["c"],
   command: "cache",
-  describe: "组件调试开发",
+  describe: "组件缓存管理",
   handler: async () => {
     const spinner = ora();
 
