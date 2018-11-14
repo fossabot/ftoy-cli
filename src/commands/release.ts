@@ -1,13 +1,9 @@
 import * as Debug from "debug";
-import { readdirSync, statSync } from "fs";
 import { prompt } from "inquirer";
 import * as ora from "ora";
-import { posix, resolve } from "path";
-import { format } from "util";
 import { CommandModule } from "yargs";
 import { IComponent } from "../interface/IComponent";
 import { Component } from "../utils/component";
-import { Directory } from "../utils/directory";
 import { Git } from "../utils/git";
 import { Project } from "../utils/project";
 import { generateTable } from "../utils/table";
@@ -42,11 +38,11 @@ module.exports = {
           type: "checkbox",
           name: "selectedComponents",
           message: "请选择你要发布的组件",
-          choices: allComponents.map(component => ({
+          choices: allComponents.map((component) => ({
             name: `${component.name} v${component.version}`,
-            value: component
+            value: component,
           })),
-          validate: e => e.length >= 1 || "至少选择一个组件"
+          validate: (e) => e.length >= 1 || "至少选择一个组件",
         });
         spinner.start("正在发布组件...");
         const results: Array<{
@@ -65,31 +61,31 @@ module.exports = {
                   return {
                     success: code === 0,
                     msg: code === 0 ? "" : "未知错误",
-                    component: selectedComponent
+                    component: selectedComponent,
                   };
                 })
-                .catch(msg => {
+                .catch((msg) => {
                   return {
                     success: false,
                     msg,
-                    component: selectedComponent
+                    component: selectedComponent,
                   };
                 });
-            }
-          )
+            },
+          ),
         );
         spinner.clear().stop();
 
         const logs = [
           ["状态", "类型", "名称", "简述", "版本号", "备注信息"],
-          ...results.map(result => [
+          ...results.map((result) => [
             result.success ? "成功" : "失败",
             result.component.type,
             result.component.name,
             result.component.label,
             result.component.version,
-            result.msg
-          ])
+            result.msg,
+          ]),
         ];
         process.stdout.write(generateTable(logs));
       }
@@ -98,5 +94,5 @@ module.exports = {
       debug(msg);
       process.exit();
     }
-  }
+  },
 } as CommandModule;

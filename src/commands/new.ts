@@ -66,7 +66,14 @@ module.exports = {
       spinner.start("正在更新信息...");
       const configPath = resolve(projectName, "package.json");
       const config = JSON.parse(readFileSync(configPath, "utf8"));
-      Object.assign(config, { name: projectName, description });
+      Object.assign(config, {
+        name: projectName,
+        description,
+        repository: {
+          type: "git",
+          url: ssh_url_to_repo || "",
+        },
+      });
       writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
 
       spinner.start("正在初始化仓库...");
