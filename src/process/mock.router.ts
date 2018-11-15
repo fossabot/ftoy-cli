@@ -1,15 +1,17 @@
+import { watch } from "fs";
 import * as Koa from "koa";
 import * as KoaRouter from "koa-router";
 import * as KoaStatic from "koa-static";
-import { join, posix } from "path";
+import { posix } from "path";
 import { getPortPromise } from "portfinder";
 import { format } from "url";
 import { IComponent } from "../interface/IComponent";
 import { Browser } from "../utils/browser";
 import { Component } from "../utils/component";
 import { Project } from "../utils/project";
+import { generateTable } from "../utils/table";
 
-class MockRouter {
+export class MockRouter {
   public app = new Koa();
   public router = new KoaRouter();
   public port: number = 0;
@@ -22,10 +24,29 @@ class MockRouter {
     this.route();
     this.app.use(this.router.routes()).use(this.router.allowedMethods());
 
-    this.app.listen(this.port);
-    Browser.open(
-      `http://dev.58corp.com:8080/#/editor/development?port=${this.port}`,
-    );
+    this.app.listen(this.port, () => {
+      const url = `http://dev.58corp.com:8080/#/editor/development?port=${
+        this.port
+      }`;
+      process.stdout.write(
+        generateTable([
+          ["服务启动成功", ""],
+          ["服务端口", this.port],
+          ["访问地址", url],
+        ]),
+      );
+      Browser.open(url);
+      watch(
+        Project.distDir,
+        {
+          recursive: true,
+          encoding: "utf8",
+        },
+        (event, name) => {
+          // console.log(event, name);
+        },
+      );
+    });
   }
 
   public async cors(ctx: Koa.Context, next: () => Promise<any>) {
