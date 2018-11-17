@@ -26,8 +26,14 @@ export class Component {
     return data;
   }
 
-  public static bundle() {
-    Command.exec(`npm run ${Project.buildScript}`);
+  public static async bundle() {
+    const allComponents: IComponent[] = await Component.getAllComponents();
+
+    if (!allComponents || !allComponents.length) {
+      throw Error("当前项目中组件列表为空");
+    } else {
+      Command.exec(`npm run ${Project.buildScript}`);
+    }
   }
 
   public static async getAllComponents(): Promise<IComponent[]> {
@@ -37,7 +43,6 @@ export class Component {
     const repoName = await Git.getRepoName().catch(() =>
       Promise.reject("找不到项目名称，请确保当前仓库存在 [origin] 信息。"),
     );
-    let tmpPath: string;
     const distDir = Project.distDir;
     const componentDir = Project.componentDir;
     const allComponents: IComponent[] = readdirSync(componentDir)
@@ -46,14 +51,9 @@ export class Component {
         Directory.exist(resolve(componentDir, component, "config.js")),
       )
       .map((component) => {
-        tmpPath = posix.join(distDir, component);
-        return resolve(componentDir, component, "config.js");
-      })
-      .map((configJs) => {
+        const configJs = resolve(componentDir, component, "config.js");
         delete require.cache[configJs];
-        return require(configJs);
-      })
-      .map((config: IComponent) => {
+        const config: IComponent = require(configJs);
         const versionFixed = config.version || "1.0.0";
         return Object.assign(config, {
           _id: config.name,
@@ -61,12 +61,13 @@ export class Component {
           gitname: repoName,
           regname: config.name + versionFixed.split(".").join("-"),
           giturl: remoteUrl,
-          path: tmpPath,
+          path: posix.join(distDir, component),
           attributes: config.props.attributes.default(),
         });
       });
     return allComponents;
   }
+
   public config: IComponent;
 
   constructor(config: IComponent) {

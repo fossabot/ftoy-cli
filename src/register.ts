@@ -14,12 +14,12 @@ class Register {
       .strict()
       .version()
       .help()
-      .showHelpOnFail(false, "可使用 help 选项查看帮助")
+      .showHelpOnFail(true)
       .epilogue(
-        "了解更多信息，请前往 https://github.com/ChenShihao/ftoy-cli.git"
+        "了解更多信息，请前往 https://github.com/ChenShihao/ftoy-cli.git",
       );
     Object.assign(cli, {
-      $0: "ftoy"
+      $0: "ftoy",
     });
     if (!cli.argv._.length) {
       cli.showHelp();

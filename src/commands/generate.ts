@@ -44,7 +44,7 @@ module.exports = {
             }
           },
         });
-        const types = await Component.getTypes() || [];
+        const types = (await Component.getTypes()) || [];
         const { componentType = "" }: any = await prompt({
           message: "请选择组件类型",
           name: "componentType",
@@ -55,7 +55,23 @@ module.exports = {
               .join("")}`,
             value: e.value,
           })),
-          validate: (type) => type.length >= 1 || "请选择其中一项",
+          validate: async (type) => {
+            if (type.length < 1) {
+              return "请选择其中一项";
+            } else {
+              // let name = `toy-${type}-`
+              // if (Directory.exist(resolve(componentDir, name))) {
+              //   return `项目目录 ${componentDir} 中已存在 ${name} 文件夹`;
+              // } else if (!(await Component.validateName(name))) {
+              //   return `组件库中已存在 ${name} 组件`;
+              // } else if (!name.match(/^[a-zA-Z0-9\-]+$/)) {
+              //   return "组件名称不符合命名规范";
+              // } else {
+              //   return true;
+              // }
+              return true;
+            }
+          },
         });
         const { componentLabel = "" }: any = await prompt({
           message: "请输入组件简述（建议使用中文，用作组件展示）",

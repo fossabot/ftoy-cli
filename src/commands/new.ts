@@ -21,13 +21,16 @@ module.exports = {
     const namespace = "ftoy-cli";
     const spinner = ora();
     try {
-      const { projectName = "" }: any = await prompt({
+      const prefix = "toy-components-";
+      let { projectName = "" }: any = await prompt({
         message: "请输入项目名称：",
         name: "projectName",
+        suffix: prefix,
         validate: async (name) => {
           if (!name) {
             return "项目名称不能为空哦";
           } else {
+            name = prefix + name;
             const canCreate: boolean = await Git.info(namespace, name).then(
               () => false,
               () => true,
@@ -42,6 +45,8 @@ module.exports = {
           }
         },
       });
+      projectName = prefix + projectName;
+
       const { description = "" }: any = await prompt({
         message: "请输入项目概述：",
         name: "description",
