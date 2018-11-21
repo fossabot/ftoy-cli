@@ -57,6 +57,7 @@
   "exclude": [
     "node_modules",
     "lib",
+    "**/__mocks__/*.ts",
     "**/*.spec.ts"
   ],
   "include": [

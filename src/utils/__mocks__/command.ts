@@ -8,11 +8,7 @@ export class Command {
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
   ): string {
-    if (!command) {
-      throw Error("The argument `command` is required.");
-    } else {
-      return execSync(command, config);
-    }
+    return "";
   }
 
   public static execp(
@@ -22,17 +18,6 @@ export class Command {
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
   ): Promise<string> {
-    if (!command) {
-      throw Error("The argument `command` is required.");
-    } else {
-      return new Promise((resovle, reject) => {
-        try {
-          const res = Command.execSync(command, config);
-          resovle(res);
-        } catch (err) {
-          reject(err.message);
-        }
-      });
-    }
+    return Promise.resolve("");
   }
 }

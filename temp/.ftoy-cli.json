@@ -1,0 +1,8 @@
+{
+  "type": "ftoy",
+  "componentDir": "test",
+  "distDir": "test",
+  "buildScript": "test",
+  "buildWatchScript": "test",
+  "testServer": "test"
+}

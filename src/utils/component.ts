@@ -1,6 +1,12 @@
 import Axios, { AxiosError, AxiosResponse } from "axios";
 import { readdirSync, statSync } from "fs";
 import { posix, resolve } from "path";
+import {
+  TYPE_LIST_API,
+  UPDATE_COMPONENT_API_ONLINE,
+  UPDATE_COMPONENT_API_TEST,
+  VALIDATE_COMPONENT_NAME_API,
+} from "../const";
 import { IComponent } from "../interface/IComponent";
 import { IType } from "../interface/IType";
 import { Command } from "./command";
@@ -10,29 +16,26 @@ import { Project } from "./project";
 
 export class Component {
   public static async validateName(name: string): Promise<boolean> {
-    const { data: isValid } = await Axios.post(
-      "http://ftoy.58corp.com/cli/name/validate",
-      {
-        name,
-      },
-    ).then((res: AxiosResponse) => res.data);
+    const { data: isValid } = await Axios.post(VALIDATE_COMPONENT_NAME_API, {
+      name,
+    }).then((res: AxiosResponse) => res.data);
     return isValid;
   }
 
   public static async getTypes(): Promise<IType[]> {
-    const { data = [] } = await Axios.get(
-      "http://ftoy.58corp.com/category/list",
-    ).then((res: AxiosResponse) => res.data);
+    const { data = [] } = await Axios.get(TYPE_LIST_API).then(
+      (res: AxiosResponse) => res.data,
+    );
     return data;
   }
 
-  public static async bundle() {
+  public static async bundle(): Promise<void> {
     const allComponents: IComponent[] = await Component.getAllComponents();
 
     if (!allComponents || !allComponents.length) {
       throw Error("当前项目中组件列表为空");
     } else {
-      Command.exec(`npm run ${Project.buildScript}`);
+      Command.execSync(`npm run ${Project.buildScript}`);
     }
   }
 
@@ -41,31 +44,35 @@ export class Component {
       Promise.reject("找不到远程地址，请确保当前仓库存在 [origin] 信息。"),
     );
     const repoName = await Git.getRepoName().catch(() =>
-      Promise.reject("找不到项目名称，请确保当前仓库存在 [origin] 信息。"),
+      Promise.reject("找不到远程地址，请确保当前仓库存在 [origin] 信息。"),
     );
     const distDir = Project.distDir;
     const componentDir = Project.componentDir;
-    const allComponents: IComponent[] = readdirSync(componentDir)
-      .filter((e) => statSync(resolve(componentDir, e)).isDirectory())
-      .filter((component) =>
-        Directory.exist(resolve(componentDir, component, "config.js")),
-      )
-      .map((component) => {
-        const configJs = resolve(componentDir, component, "config.js");
-        delete require.cache[configJs];
-        const config: IComponent = require(configJs);
-        const versionFixed = config.version || "1.0.0";
-        return Object.assign(config, {
-          _id: config.name,
-          version: versionFixed,
-          gitname: repoName,
-          regname: config.name + versionFixed.split(".").join("-"),
-          giturl: remoteUrl,
-          path: posix.join(distDir, component),
-          attributes: config.props.attributes.default(),
+    if (Directory.exist(componentDir)) {
+      const allComponents: IComponent[] = readdirSync(componentDir)
+        .filter((e) => statSync(resolve(componentDir, e)).isDirectory())
+        .filter((component) =>
+          Directory.exist(resolve(componentDir, component, "config.js")),
+        )
+        .map((component) => {
+          const configJs = resolve(componentDir, component, "config.js");
+          delete require.cache[configJs];
+          const config: IComponent = require(configJs);
+          const versionFixed = config.version;
+          return Object.assign(config, {
+            _id: config.name,
+            version: versionFixed,
+            gitname: repoName,
+            regname: config.name + versionFixed.split(".").join("-"),
+            giturl: remoteUrl,
+            path: posix.join(distDir, component),
+            attributes: config.props.attributes.default(),
+          });
         });
-      });
-    return allComponents;
+      return allComponents;
+    } else {
+      return [];
+    }
   }
 
   public config: IComponent;
@@ -75,18 +82,12 @@ export class Component {
   }
 
   public release(env = "test" as "online" | "test") {
-    if (!this.config) {
-      throw new Error("The argument `config` is required.");
-    } else {
-      const map = {
-        online: "http://ftoy.58corp.com/component/update",
-        test: `http://${Project.testServer}/component/update`,
-      };
-      return Axios.post(map[env || "test"], {
-        component: this.config,
-      })
-        .then((res: AxiosResponse) => res.data)
-        .catch((err: AxiosError) => Promise.reject(err.message));
-    }
+    const map = {
+      online: UPDATE_COMPONENT_API_ONLINE,
+      test: UPDATE_COMPONENT_API_TEST,
+    };
+    return Axios.post(map[env], {
+      component: this.config,
+    }).then((res: AxiosResponse) => res.data);
   }
 }

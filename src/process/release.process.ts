@@ -5,7 +5,7 @@ import { IComponent } from "../interface/IComponent";
 import { Component } from "../utils/component";
 import { Git } from "../utils/git";
 import { Project } from "../utils/project";
-import { generateTable } from "../utils/table";
+import { calTabNum, generateTable } from "../utils/table";
 
 export async function release(
   env = "test" as "online" | "test",
@@ -16,10 +16,10 @@ export async function release(
     if (!Project.isValid()) {
       spinner.info("当前目录似乎不符合项目规范，请确保处于组件项目根目录");
     } else {
-      spinner.start("正在打包组件...");
-      await Component.bundle();
-      Git.commit("Build via ftoy-cli.");
-      Git.push();
+      // spinner.start("正在打包组件...");
+      // await Component.bundle();
+      // Git.commit("Build via ftoy-cli.");
+      // Git.push();
 
       spinner.start("正在读取信息...");
       const allComponents: IComponent[] = await Component.getAllComponents();
@@ -30,14 +30,22 @@ export async function release(
       }
 
       spinner.stop();
+      const maxTabNum = Math.max(
+        ...allComponents.map((e) => e.name).map(calTabNum),
+      );
       const { selectedComponents }: any = await prompt({
         type: "checkbox",
         name: "selectedComponents",
         message: "请选择你要发布的组件",
-        choices: allComponents.map((component) => ({
-          name: `${component.name} v${component.version}`,
-          value: component,
-        })),
+        choices: allComponents.map((component) => {
+          const tabs = "\t".repeat(maxTabNum - calTabNum(component.name) + 1);
+          return {
+            name: `${component.name}${tabs}(v${component.version} ${
+              component.label
+            })`,
+            value: component,
+          };
+        }),
         validate: (e) => e.length >= 1 || "至少选择一个组件",
       });
 
@@ -47,25 +55,27 @@ export async function release(
         msg: string;
         component: IComponent;
       }> = await Promise.all(
-        (selectedComponents as IComponent[]).map(async (selectedComponent: IComponent) => {
-          return new Component(selectedComponent)
-            .release(env)
-            .then((data: any) => {
-              const { code } = data;
-              return {
-                success: code === 0,
-                msg: code === 0 ? "" : "未知错误",
-                component: selectedComponent,
-              };
-            })
-            .catch((msg) => {
-              return {
-                success: false,
-                msg,
-                component: selectedComponent,
-              };
-            });
-        }),
+        (selectedComponents as IComponent[]).map(
+          async (selectedComponent: IComponent) => {
+            return new Component(selectedComponent)
+              .release(env)
+              .then((data: any) => {
+                const { code } = data;
+                return {
+                  success: code === 0,
+                  msg: code === 0 ? "" : "未知错误",
+                  component: selectedComponent,
+                };
+              })
+              .catch((msg) => {
+                return {
+                  success: false,
+                  msg,
+                  component: selectedComponent,
+                };
+              });
+          },
+        ),
       );
       spinner.clear().stop();
 

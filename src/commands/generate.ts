@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import * as Debug from "debug";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { prompt } from "inquirer";
@@ -9,10 +10,50 @@ import { TMP_COMPONENT_DIR } from "../const";
 import { cacheComponents } from "../utils/cache";
 import { Component } from "../utils/component";
 import { Directory } from "../utils/directory";
-import { Git } from "../utils/git";
 import { Project } from "../utils/project";
 
 const debug = Debug("[Command] generate");
+
+async function askForComponentType(): Promise<{
+  componentType: string;
+  componentName: string;
+}> {
+  const componentDir = Project.componentDir;
+
+  const types = (await Component.getTypes()) || [];
+
+  return await prompt({
+    message: "请选择组件类型",
+    name: "componentType",
+    type: "list",
+    choices: types.map((e) => ({
+      name: `${e.label} - ${[...e.value]
+        .map((s: string, i: number) => (i === 0 ? s.toUpperCase() : s))
+        .join("")}`,
+      value: e.value,
+    })),
+  }).then(async ({ componentType }: any) => {
+    const hash = createHash("md5");
+    const res = hash.update(Date.now().toString()).digest("hex").slice(0, 6);
+    const componentName = `toy-${componentType}-${res}`;
+    const spinner = ora();
+    if (Directory.exist(resolve(componentDir, componentName))) {
+      spinner.info(`项目目录 ${componentDir} 中已存在 ${componentName} 文件夹`);
+      return await askForComponentType();
+    } else if (!(await Component.validateName(componentName))) {
+      spinner.info(`组件库中已存在 ${componentName} 组件`);
+      return await askForComponentType();
+    } else if (!componentName.match(/^[a-zA-Z0-9\-]+$/)) {
+      spinner.info("组件名称不符合命名规范");
+      return await askForComponentType();
+    } else {
+      return {
+        componentType,
+        componentName,
+      };
+    }
+  });
+}
 
 module.exports = {
   aliases: ["g"],
@@ -25,54 +66,8 @@ module.exports = {
         spinner.info("当前目录似乎不符合项目规范，请确保处于组件项目根目录");
       } else {
         const componentDir = Project.componentDir;
-        const { componentName = "" }: any = await prompt({
-          message: "请输入组件名称（仅可由大小写字母、数字与字符 - 组成）",
-          name: "componentName",
-          validate: async (name: string) => {
-            if (!name) {
-              return "组件名称不能为空哦";
-            } else {
-              if (Directory.exist(resolve(componentDir, name))) {
-                return `项目目录 ${componentDir} 中已存在 ${name} 文件夹`;
-              } else if (!(await Component.validateName(name))) {
-                return `组件库中已存在 ${name} 组件`;
-              } else if (!name.match(/^[a-zA-Z0-9\-]+$/)) {
-                return "组件名称不符合命名规范";
-              } else {
-                return true;
-              }
-            }
-          },
-        });
-        const types = (await Component.getTypes()) || [];
-        const { componentType = "" }: any = await prompt({
-          message: "请选择组件类型",
-          name: "componentType",
-          type: "list",
-          choices: types.map((e) => ({
-            name: `${e.label} - ${[...e.value]
-              .map((s: string, i: number) => (i === 0 ? s.toUpperCase() : s))
-              .join("")}`,
-            value: e.value,
-          })),
-          validate: async (type) => {
-            if (type.length < 1) {
-              return "请选择其中一项";
-            } else {
-              // let name = `toy-${type}-`
-              // if (Directory.exist(resolve(componentDir, name))) {
-              //   return `项目目录 ${componentDir} 中已存在 ${name} 文件夹`;
-              // } else if (!(await Component.validateName(name))) {
-              //   return `组件库中已存在 ${name} 组件`;
-              // } else if (!name.match(/^[a-zA-Z0-9\-]+$/)) {
-              //   return "组件名称不符合命名规范";
-              // } else {
-              //   return true;
-              // }
-              return true;
-            }
-          },
-        });
+        const { componentType, componentName } = await askForComponentType();
+
         const { componentLabel = "" }: any = await prompt({
           message: "请输入组件简述（建议使用中文，用作组件展示）",
           name: "componentLabel",

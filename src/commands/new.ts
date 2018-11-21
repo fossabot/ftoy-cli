@@ -22,7 +22,7 @@ module.exports = {
     const spinner = ora();
     try {
       const prefix = "toy-components-";
-      let { projectName = "" }: any = await prompt({
+      let { projectName = "" as string }: any = await prompt({
         message: "请输入项目名称：",
         name: "projectName",
         suffix: prefix,
@@ -52,9 +52,10 @@ module.exports = {
         name: "description",
         validate: async (name) => !!name || "项目概述不能为空哦",
       });
+
       const options: ExecSyncOptionsWithStringEncoding = {
-        encoding: "utf8" as BufferEncoding,
-        cwd: projectName as string,
+        encoding: "utf8",
+        cwd: projectName,
         stdio: [null, null, null],
       };
       spinner.start("正在创建仓库...");

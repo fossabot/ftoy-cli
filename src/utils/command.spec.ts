@@ -1,23 +1,25 @@
 import { Command } from "./command";
 
-describe("[utils] Command", () => {
+describe("[utils] command", () => {
   test("[ERROR] execp", async () => {
     expect(() => Command.execp("")).toThrowError(/required/);
   });
   test("[SUCCESS] execp", async () => {
-    expect(Command.execp("node --version")).toBeTruthy();
+    expect(Command.execp("cd")).resolves.toBe("");
   });
   test("[FAILED] execp", async () => {
     expect(Command.execp("edon")).rejects.toBeTruthy();
   });
 
   test("[ERROR] exec", async () => {
-    expect(() => Command.exec("")).toThrowError(/required/);
+    expect(() => Command.execSync("")).toThrowError(/required/);
   });
+
   test("[SUCCESS] exec", async () => {
-    expect(Command.exec("node --version")).toBeTruthy();
+    expect(Command.execSync("cd")).toBe("");
   });
+
   test("[FAILED] exec", async () => {
-    expect(() => Command.exec("edon")).toThrowError();
+    expect(() => Command.execSync("edon")).toThrowError();
   });
 });

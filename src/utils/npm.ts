@@ -1,9 +1,29 @@
 import { which } from "shelljs";
 
 export class NodePackageManager {
-  public static MANAGERS = ["yarn", "cnpm", "npm"];
+  private static MANAGERS = [
+    {
+      name: "yarn",
+      global: "global",
+      install: "add",
+    },
+    {
+      name: "cnpm",
+      global: "-g",
+      install: "i",
+    },
+    {
+      name: "npm",
+      global: "-g",
+      install: "i",
+    },
+  ];
 
-  public static get managersCanUse(): string[] {
-    return NodePackageManager.MANAGERS.filter((cmd) => !!which(cmd));
+  public static get managersCanUse(): Array<{
+    name: string;
+    global: string;
+    install: string;
+  }> {
+    return NodePackageManager.MANAGERS.filter((manager) => !!which(manager.name));
   }
 }

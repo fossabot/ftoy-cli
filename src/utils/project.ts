@@ -1,7 +1,8 @@
 import { resolve } from "path";
+import { CONFIG_FILE_PATH } from "../config.const";
 import { Directory } from "./directory";
 
-const configPath = resolve(".ftoy-cli.json");
+const configPath = resolve(CONFIG_FILE_PATH);
 
 let type: string;
 let componentDir: string;
@@ -32,7 +33,7 @@ export class Project {
   public static distDir: string = distDir || "dist";
   public static buildScript: string = buildScript || "build";
   public static buildWatchScript: string = buildWatchScript || "build:w";
-  public static testServer: string = testServer || "192.168.66.198";
+  public static testServer: string = testServer || "192.168.66.198:7112";
 
   public static isValid(): boolean {
     return type === "ftoy";

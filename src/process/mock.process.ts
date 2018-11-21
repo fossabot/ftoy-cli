@@ -2,7 +2,7 @@ import { watch } from "fs";
 import * as Koa from "koa";
 import * as KoaRouter from "koa-router";
 import * as KoaStatic from "koa-static";
-import { posix } from "path";
+import { join, posix } from "path";
 import { getPortPromise } from "portfinder";
 import { format } from "url";
 import { Server } from "ws";
@@ -80,8 +80,9 @@ export class MockRouter {
 
   public route() {
     this.router.get("/component/list", async (ctx, next) => {
-      const allComponents: IComponent[] = (await Component.getAllComponents()).map(
-        (e) =>
+      const allComponents: IComponent[] = (await Component.getAllComponents())
+        .filter((e) => Directory.exist(join(e.path, "bundle.js")))
+        .map((e) =>
           Object.assign(e, {
             cdnpath: format({
               protocol: "http",
@@ -90,7 +91,7 @@ export class MockRouter {
               pathname: posix.join(e.path, "bundle.js"),
             }),
           }),
-      );
+        );
       ctx.body = allComponents;
     });
   }

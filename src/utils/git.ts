@@ -1,6 +1,7 @@
 import Axios, { AxiosError, AxiosResponse } from "axios";
 import { ExecSyncOptionsWithStringEncoding } from "child_process";
 import { Command } from "./command";
+import { Token } from "./token";
 
 export class Git {
   /**
@@ -17,7 +18,7 @@ export class Git {
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
   ): void {
-    Command.exec("git init", options);
+    Command.execSync("git init", options);
   }
 
   /**
@@ -33,16 +34,12 @@ export class Git {
    * @memberof Git
    */
   public static clone(
-    { url, dist = "", branch = "master" } = {} as {
+    { url = "", dist = "", branch = "master" } = {} as {
       url: string;
       dist?: string;
       branch?: string;
     },
   ): Promise<string> {
-    if (!url) {
-      throw Error("The argument `url` is required.");
-    }
-
     return Command.execp(
       `git clone --depth 1 --single-branch -b ${branch} ${url} ${dist}`,
       {
@@ -61,7 +58,7 @@ export class Git {
    * @returns {Promise<string>}
    * @memberof Git
    */
-  public static create(
+  public static async create(
     name: string,
     {
       namespace_id = 14777, // TODO
@@ -69,26 +66,23 @@ export class Git {
       visibility = "internal" as "private" | "internal" | "public",
     } = {},
   ): Promise<string> {
-    if (!name) {
-      throw Error("The argument `name` is required.");
-    } else {
-      return Axios.post(
-        "http://igit.58corp.com/api/v4/projects",
-        {
-          name,
-          namespace_id,
-          visibility,
-          description,
+    const token = await Token.getValue();
+    return Axios.post(
+      "http://igit.58corp.com/api/v4/projects",
+      {
+        name,
+        namespace_id,
+        visibility,
+        description,
+      },
+      {
+        headers: {
+          "Private-Token": token,
         },
-        {
-          headers: {
-            "Private-Token": "qoHG4AJeyv9BGR8wC9VC",
-          },
-        },
-      )
-        .then((res: AxiosResponse) => res.data)
-        .catch((err: AxiosError) => Promise.reject(err.message));
-    }
+      },
+    )
+      .then((res: AxiosResponse) => res.data)
+      .catch((err: AxiosError) => Promise.reject(err.message));
   }
 
   /**
@@ -100,24 +94,16 @@ export class Git {
    * @returns {(Promise<string | object>)}
    * @memberof Git
    */
-  public static info(
+  public static async info(
     namespace: string,
     name: string,
   ): Promise<string | object> {
-    if (!name) {
-      throw Error("The argument `name` is required.");
-    } else if (!namespace) {
-      throw Error("The argument `namespace` is required.");
-    } else {
-      const project = encodeURIComponent([namespace, name].join("/"));
-      return Axios.get(`http://igit.58corp.com/api/v4/projects/${project}`, {
-        headers: {
-          "Private-Token": "qoHG4AJeyv9BGR8wC9VC",
-        },
-      })
-        .then((res: AxiosResponse) => res.data)
-        .catch((err: AxiosError) => Promise.reject(err.message));
-    }
+    const project = encodeURIComponent([namespace, name].join("/"));
+    return Axios.get(`http://igit.58corp.com/api/v4/projects/${project}`, {
+      headers: {
+        "Private-Token": await Token.getValue(),
+      },
+    }).then((res: AxiosResponse) => res.data);
   }
 
   /**
@@ -139,12 +125,9 @@ export class Git {
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
   ): void {
-    if (!message) {
-      throw Error("The argument `message` is required.");
-    }
     if (!Git.isClean(options)) {
-      Command.exec(`git add .`, options);
-      Command.exec(`git commit -a -m "${message}"`, options);
+      Command.execSync(`git add .`, options);
+      Command.execSync(`git commit -a -m "${message}"`, options);
     }
   }
 
@@ -172,7 +155,7 @@ export class Git {
     } as ExecSyncOptionsWithStringEncoding,
   } = {}): void {
     Git.commit("Commit via ftoy-cli", options);
-    Command.exec(`git push ${origin} ${branch}`, options);
+    Command.execSync(`git push ${origin} ${branch}`, options);
   }
 
   /**
@@ -192,12 +175,8 @@ export class Git {
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
   ): boolean {
-    try {
-      const res = Command.exec("git status -s", options);
-      return !res;
-    } catch (e) {
-      return true;
-    }
+    const res = Command.execSync("git status -s", options);
+    return !res;
   }
 
   /**
@@ -219,10 +198,7 @@ export class Git {
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
   ): void {
-    if (!url) {
-      throw Error("The argument `url` is required.");
-    }
-    Command.exec(`git remote add origin ${url}`, options);
+    Command.execSync(`git remote add origin ${url}`, options);
   }
 
   /**

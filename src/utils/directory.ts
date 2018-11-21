@@ -15,18 +15,14 @@ export class Directory {
     name: string,
     type = "all" as "file" | "dir" | "all",
   ): boolean {
-    if (!name) {
-      throw Error("The argument `name` is required.");
-    } else {
-      const target = resolve(name);
-      switch (type) {
-        case "file":
-          return shellTest("-f", target);
-        case "dir":
-          return shellTest("-d", target);
-        default:
-          return shellTest("-e", target);
-      }
+    const target = resolve(name);
+    switch (type) {
+      case "file":
+        return shellTest("-f", target);
+      case "dir":
+        return shellTest("-d", target);
+      default:
+        return shellTest("-e", target);
     }
   }
 
@@ -38,11 +34,7 @@ export class Directory {
    * @memberof Directory
    */
   public static delete(name: string): void {
-    if (!name) {
-      throw Error("The argument `name` is required.");
-    } else {
-      rm("-rf", resolve(name));
-    }
+    rm("-rf", resolve(name));
   }
 
   /**
@@ -54,12 +46,6 @@ export class Directory {
    * @memberof Directory
    */
   public static copy(from: string, to: string): void {
-    if (!from) {
-      throw Error("The argument `from` is required.");
-    } else if (!to) {
-      throw Error("The argument `to` is required.");
-    } else {
-      cp("-R", resolve(from), resolve(to));
-    }
+    cp("-R", resolve(from), resolve(to));
   }
 }
