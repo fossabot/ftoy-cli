@@ -19,13 +19,10 @@ export async function checkUpdate() {
       spinner.fail(`检查更新失败`);
       return Promise.reject(err.message);
     });
-  if (
-    latestVersion &&
-    Version.compare(latestVersion.split("."), version.split(".")).result === 1
-  ) {
+  if (latestVersion && Version.compare(latestVersion, version).result === 1) {
     spinner.info(`发现新版本 v${latestVersion}`);
     const { manager }: any = await prompt({
-      message: "请选择使用以下一种包管理器进行更新",
+      message: "请选择包管理器进行更新",
       name: "manager",
       type: "list",
       choices: NodePackageManager.managersCanUse.map((e) => ({
@@ -34,13 +31,21 @@ export async function checkUpdate() {
       })),
       validate: async (choice) => choice.length > 0 || "请选择你想用的包管理器",
     });
-    Command.execSync(`${manager.name} ${manager.global} ${manager.install} ftoy-cli`, {
-      stdio: [0, 1, 2],
-      encoding: "utf8",
-    });
-    spinner.succeed(`通过 ${manager.name} 更新完成`);
-
-    process.exit();
+    await Command.execp(
+      `${manager.name} ${manager.global} ${manager.install} ftoy-cli`,
+      {
+        stdio: [0, 1, 2],
+        encoding: "utf8",
+      },
+    )
+      .then((e) => {
+        spinner.succeed(`通过 ${manager.name} 更新成功`);
+        process.exit();
+      })
+      .catch((e) => {
+        spinner.fail(`通过 ${manager.name} 更新失败`);
+        process.exit();
+      });
   } else {
     writeFileSync(CHECK_UPDATE_CACHE_FILE, Date.now(), {
       encoding: "UTF-8",

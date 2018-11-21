@@ -1,5 +1,8 @@
+import * as Debug from "debug";
 import { resolve } from "path";
 import * as yargs from "yargs";
+import { checkUpdate } from "./process/update.process";
+import { Version } from "./utils/version";
 
 class Register {
   public commandDir: string;
@@ -26,6 +29,17 @@ class Register {
     }
   }
 }
+(async () => {
+  const register = new Register();
+  const debug = Debug("[Register] Bootstrap");
 
-const register = new Register();
-register.bootstrap();
+  try {
+    if (Version.shouldCheck) {
+      await checkUpdate();
+    }
+  } catch (msg) {
+    debug(msg);
+  } finally {
+    register.bootstrap();
+  }
+})();

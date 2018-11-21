@@ -2,12 +2,12 @@ import { watch } from "fs";
 import * as Koa from "koa";
 import * as KoaRouter from "koa-router";
 import * as KoaStatic from "koa-static";
+import Open = require("opn");
 import { join, posix } from "path";
 import { getPortPromise } from "portfinder";
 import { format } from "url";
 import { Server } from "ws";
 import { IComponent } from "../interface/IComponent";
-import { Browser } from "../utils/browser";
 import { Component } from "../utils/component";
 import { Directory } from "../utils/directory";
 import { Project } from "../utils/project";
@@ -46,7 +46,7 @@ export class MockRouter {
           perMessageDeflate: false,
         },
         () => {
-          Browser.open(url);
+          Open(url);
         },
       );
       wss.on("connection", (ws) => {

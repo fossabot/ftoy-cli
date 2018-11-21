@@ -7,19 +7,20 @@ import { Git } from "../utils/git";
 import { Project } from "../utils/project";
 import { calTabNum, generateTable } from "../utils/table";
 
+const debug = Debug("[Command] release");
+
 export async function release(
   env = "test" as "online" | "test",
-  debug: Debug.IDebugger,
 ) {
   const spinner = ora();
   try {
     if (!Project.isValid()) {
       spinner.info("当前目录似乎不符合项目规范，请确保处于组件项目根目录");
     } else {
-      // spinner.start("正在打包组件...");
-      // await Component.bundle();
-      // Git.commit("Build via ftoy-cli.");
-      // Git.push();
+      spinner.start("正在打包组件...");
+      await Component.bundle();
+      Git.commit("Build via ftoy-cli.");
+      Git.push();
 
       spinner.start("正在读取信息...");
       const allComponents: IComponent[] = await Component.getAllComponents();

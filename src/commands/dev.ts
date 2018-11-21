@@ -10,7 +10,7 @@ const debug = Debug("[Command] dev");
 module.exports = {
   aliases: ["d"],
   command: "dev",
-  describe: "组件调试开发",
+  describe: "组件调试",
   handler: async () => {
     const spinner = ora();
     try {

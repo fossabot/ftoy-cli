@@ -18,9 +18,11 @@ async function askForComponentType(): Promise<{
   componentType: string;
   componentName: string;
 }> {
+  const spinner = ora();
   const componentDir = Project.componentDir;
-
+  spinner.start("正在获取组件类型...");
   const types = (await Component.getTypes()) || [];
+  spinner.stop();
 
   return await prompt({
     message: "请选择组件类型",
@@ -36,7 +38,6 @@ async function askForComponentType(): Promise<{
     const hash = createHash("md5");
     const res = hash.update(Date.now().toString()).digest("hex").slice(0, 6);
     const componentName = `toy-${componentType}-${res}`;
-    const spinner = ora();
     if (Directory.exist(resolve(componentDir, componentName))) {
       spinner.info(`项目目录 ${componentDir} 中已存在 ${componentName} 文件夹`);
       return await askForComponentType();

@@ -8,9 +8,9 @@ try {
     process.title = "ftoy-cli";
 }
 
-const [v1, v2, v3] = process.version.substr(1).split(".");
+const [major, minor, patch] = process.version.substr(1).split(".");
 
-if (Number(v1) < 8) {
+if (Number(major) < 8) {
     process.stderr.write(
         `当前 Node.js 版本 ${process.version} 不受支持, 请升级至 >=8.0 \n`
     );
