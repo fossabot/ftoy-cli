@@ -27,7 +27,7 @@ describe("[utils] component", () => {
     (Axios.get as jest.Mock<any>).mockResolvedValueOnce({
       data: MOCK_DATA_EMPTY,
     });
-    expect(Component.getTypes()).resolves.toBe([]);
+    expect(Component.getTypes()).resolves.toEqual([]);
   });
 
   test("Get All Components [NO REMOTE URL]", async () => {

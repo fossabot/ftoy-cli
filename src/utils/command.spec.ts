@@ -5,7 +5,7 @@ describe("[utils] command", () => {
     expect(() => Command.execp("")).toThrowError(/required/);
   });
   test("[SUCCESS] execp", async () => {
-    expect(Command.execp("cd")).resolves.toBe("");
+    expect(Command.execp("cd")).resolves.toBeDefined();
   });
   test("[FAILED] execp", async () => {
     expect(Command.execp("edon")).rejects.toBeTruthy();
@@ -16,7 +16,7 @@ describe("[utils] command", () => {
   });
 
   test("[SUCCESS] exec", async () => {
-    expect(Command.execSync("cd")).toBe("");
+    expect(Command.execSync("cd")).toBeDefined();
   });
 
   test("[FAILED] exec", async () => {
