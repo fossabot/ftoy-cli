@@ -265,6 +265,7 @@ export class Git {
   }
 
   public static get username() {
-    return Command.execSync("git config --get user.name");
+    const res = Command.execSync("git config --get user.name");
+    return res.trim();
   }
 }
