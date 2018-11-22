@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/ChenShihao/ftoy-cli.svg?branch=master)](https://travis-ci.com/ChenShihao/ftoy-cli)
 [![Coverage Status](https://coveralls.io/repos/github/ChenShihao/ftoy-cli/badge.svg?branch=master)](https://coveralls.io/github/ChenShihao/ftoy-cli?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/77c2d0a16ce878659921/maintainability)](https://codeclimate.com/github/ChenShihao/ftoy-cli/maintainability)
+![GitHub last commit](https://img.shields.io/github/last-commit/ChenShihao/ftoy-cli.svg?logo=github)
 
 ![dependencies](https://img.shields.io/david/ChenShihao/ftoy-cli.svg?logo=npm)
 ![dev dependencies](https://img.shields.io/david/dev/ChenShihao/ftoy-cli.svg?logo=npm)
@@ -10,9 +11,7 @@
 ![node version](https://img.shields.io/node/v/ftoy-cli.svg?logo=Node.js)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/ChenShihao/ftoy-cli.svg?logo=github)
-![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/ftoy-cli.svg?logo=npm)
 ![GitHub top language](https://img.shields.io/github/languages/top/ChenShihao/ftoy-cli.svg?colorB=green)
-![GitHub last commit](https://img.shields.io/github/last-commit/ChenShihao/ftoy-cli.svg?logo=github)
 
 > 一个为 [Toy System](http://ftoy.58corp.com) 量身定做的 CLI 工具
 
