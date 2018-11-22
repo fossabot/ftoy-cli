@@ -10,9 +10,9 @@
 ![node version](https://img.shields.io/node/v/ftoy-cli.svg?logo=Node.js)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/ChenShihao/ftoy-cli.svg?logo=github)
+![npm bundle size (minified)](https://img.shields.io/bundlephobia/min/ftoy-cli.svg?logo=npm)
 ![GitHub top language](https://img.shields.io/github/languages/top/ChenShihao/ftoy-cli.svg?colorB=green)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ChenShihao/ftoy-cli.svg?logo=github)
-
 
 > 一个为 [Toy System](http://ftoy.58corp.com) 量身定做的 CLI 工具
 
@@ -107,7 +107,7 @@ $ ftoy release
 或者
 
 ```sh
-$ ftoy rl
+$ ftoy r
 ```
 
 ### 更新模板缓存
