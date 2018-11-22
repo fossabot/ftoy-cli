@@ -103,4 +103,10 @@ describe("[utils] git", () => {
       expect(typeof Git.username).toEqual("string");
     });
   });
+
+  describe("getUserEmail", () => {
+    test("[SUCCESS]", () => {
+      expect(typeof Git.useremail).toEqual("string");
+    });
+  });
 });

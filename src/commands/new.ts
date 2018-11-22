@@ -79,6 +79,10 @@ module.exports = {
           type: "git",
           url: ssh_url_to_repo || "",
         },
+        author: {
+          name: Git.username || "",
+          email: Git.useremail || "",
+        },
       });
       writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
 

@@ -9,9 +9,7 @@ import { calTabNum, generateTable } from "../utils/table";
 
 const debug = Debug("[Command] release");
 
-export async function release(
-  env = "test" as "online" | "test",
-) {
+export async function release(env = "test" as "online" | "test") {
   const spinner = ora();
   try {
     if (!Project.isValid()) {
@@ -56,8 +54,13 @@ export async function release(
         msg: string;
         component: IComponent;
       }> = await Promise.all(
-        (selectedComponents as IComponent[]).map(
-          async (selectedComponent: IComponent) => {
+        (selectedComponents as IComponent[])
+          .map((selectedComponent: IComponent) => {
+            return Object.assign(selectedComponent, {
+              uname: Git.username,
+            });
+          })
+          .map(async (selectedComponent: IComponent) => {
             return new Component(selectedComponent)
               .release(env)
               .then((data: any) => {
@@ -75,8 +78,7 @@ export async function release(
                   component: selectedComponent,
                 };
               });
-          },
-        ),
+          }),
       );
       spinner.clear().stop();
 

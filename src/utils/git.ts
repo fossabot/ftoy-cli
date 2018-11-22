@@ -268,4 +268,9 @@ export class Git {
     const res = Command.execSync("git config --get user.name");
     return res.trim();
   }
+
+  public static get useremail() {
+    const res = Command.execSync("git config --get user.email");
+    return res.trim();
+  }
 }

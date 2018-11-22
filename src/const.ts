@@ -6,6 +6,7 @@ import { generateTable } from "./utils/table";
 
 const debug = Debug("[Const]");
 
+// Group `fangui`
 export const NAMESPACE_ID = 13900;
 
 export const TMP_ROOT = resolve(tempdir(), "__ftoy-cli");
