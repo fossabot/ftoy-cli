@@ -100,7 +100,7 @@ describe("[utils] git", () => {
 
   describe("getUsername", () => {
     test("[SUCCESS]", () => {
-      expect(Git.username).toBeDefined();
+      expect(Git.username).toBeInstanceOf(String);
     });
   });
 });
