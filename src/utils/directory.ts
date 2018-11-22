@@ -1,4 +1,5 @@
-import { resolve } from "path";
+import { readdirSync, statSync } from "fs";
+import { join, resolve } from "path";
 import { cp, rm, test as shellTest } from "shelljs";
 
 export class Directory {
@@ -47,5 +48,22 @@ export class Directory {
    */
   public static copy(from: string, to: string): void {
     cp("-R", resolve(from), resolve(to));
+  }
+
+  /**
+   * 递归获取目录文件
+   *
+   * @param dir 目录
+   */
+  public static readAllSync(dir: string): string[] {
+    const subs = readdirSync(dir).map((sub) => join(dir, sub));
+    const subDirs = subs
+      .filter((sub) => statSync(sub).isDirectory())
+      .reduce(
+        (target, subDir) => [...target, ...Directory.readAllSync(subDir)],
+        [] as string[],
+      );
+    const subFiles = subs.filter((sub) => statSync(sub).isFile());
+    return [...subDirs, ...subFiles];
   }
 }

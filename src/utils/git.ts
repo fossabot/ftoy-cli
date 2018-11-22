@@ -1,5 +1,6 @@
 import Axios, { AxiosError, AxiosResponse } from "axios";
 import { ExecSyncOptionsWithStringEncoding } from "child_process";
+import { NAMESPACE_ID } from "../const";
 import { Command } from "./command";
 import { Token } from "./token";
 
@@ -54,14 +55,13 @@ export class Git {
    *
    * @static
    * @param {string} name 仓库名
-   * @param {*} [{ namespace_id = 14777, visibility = "internal" }={}] 配置参数
    * @returns {Promise<string>}
    * @memberof Git
    */
   public static async create(
     name: string,
     {
-      namespace_id = 14777, // TODO
+      namespace_id = NAMESPACE_ID,
       description = "Create via ftoy-cli.",
       visibility = "internal" as "private" | "internal" | "public",
     } = {},
@@ -98,7 +98,7 @@ export class Git {
     namespace: string,
     name: string,
   ): Promise<string | object> {
-    const project = encodeURIComponent([namespace, name].join("/"));
+    const project = [namespace, name].map((e) => encodeURIComponent(e)).join("/");
     return Axios.get(`http://igit.58corp.com/api/v4/projects/${project}`, {
       headers: {
         "Private-Token": await Token.getValue(),
@@ -191,14 +191,18 @@ export class Git {
    * @returns
    * @memberof Git
    */
-  public static setRemoteUrl(
+  public static async setRemoteUrl(
     url: string,
     options = {
       stdio: [null, null, null],
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
-  ): void {
-    Command.execSync(`git remote add origin ${url}`, options);
+  ): Promise<void> {
+    if (await Git.getRemoteUrl(options).catch(() => "")) {
+      Command.execSync(`git remote set-url origin ${url}`, options);
+    } else {
+      Command.execSync(`git remote add origin ${url}`, options);
+    }
   }
 
   /**
@@ -258,5 +262,9 @@ export class Git {
       },
       () => Promise.reject(""),
     );
+  }
+
+  public static get username() {
+    return Command.execSync("git config --get user.name");
   }
 }

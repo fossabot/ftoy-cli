@@ -1,5 +1,6 @@
 .vscode/
 
+lib/**/*.js.map
 temp/
 src/
 coverage/

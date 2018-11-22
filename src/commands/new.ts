@@ -65,7 +65,7 @@ module.exports = {
 
       spinner.start("正在克隆仓库...");
       if (!Directory.exist(TMP_PROJECT_DIR)) {
-        cacheProjects();
+        await cacheProjects();
       }
       Directory.copy(TMP_PROJECT_DIR, projectName);
 
@@ -87,7 +87,7 @@ module.exports = {
       Git.commit("Commit via ftoy-cli", options);
       if (ssh_url_to_repo) {
         spinner.start("正在推送代码...");
-        Git.setRemoteUrl(ssh_url_to_repo, options);
+        await Git.setRemoteUrl(ssh_url_to_repo, options);
         Git.push({ options });
       }
 

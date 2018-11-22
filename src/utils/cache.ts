@@ -1,20 +1,9 @@
-import * as Debug from "debug";
 import { resolve } from "path";
-import {
-  COMPONENT_GIT_URL,
-  PROJECT_GIT_URL,
-  TMP_COMPONENT_DIR,
-  TMP_PROJECT_DIR,
-  TMP_ROOT,
-} from "../const";
+import { COMPONENT_GIT_URL, PROJECT_GIT_URL, TMP_COMPONENT_DIR, TMP_PROJECT_DIR, TMP_ROOT } from "../const";
 import { Directory } from "./directory";
 import { Git } from "./git";
 
-const debug = Debug("[Utils] cache");
-
 export async function cacheProjects() {
-  debug(TMP_PROJECT_DIR);
-
   Directory.delete(TMP_PROJECT_DIR);
   await Git.clone({
     dist: TMP_PROJECT_DIR,
@@ -24,8 +13,6 @@ export async function cacheProjects() {
 }
 
 export async function cacheComponents() {
-  debug(TMP_COMPONENT_DIR);
-
   Directory.delete(TMP_COMPONENT_DIR);
   await Git.clone({
     dist: TMP_COMPONENT_DIR,
@@ -35,7 +22,5 @@ export async function cacheComponents() {
 }
 
 export function cleanCache() {
-  debug(TMP_ROOT);
-
   Directory.delete(TMP_ROOT);
 }

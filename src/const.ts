@@ -1,10 +1,12 @@
+import * as Debug from "debug";
 import { resolve } from "path";
 import { tempdir } from "shelljs";
 import { Project } from "./utils/project";
-import * as Debug from "debug";
 import { generateTable } from "./utils/table";
 
 const debug = Debug("[Const]");
+
+export const NAMESPACE_ID = 13900;
 
 export const TMP_ROOT = resolve(tempdir(), "__ftoy-cli");
 
@@ -20,7 +22,7 @@ export const COMPONENT_GIT_URL =
 
 export const CHECK_UPDATE_CACHE_FILE = resolve(
   tempdir(),
-  "__ftoy-cli.update.cache"
+  "__ftoy-cli.update.cache",
 );
 
 export const CHECK_VERSION_API = "http://ftoy.58corp.com/cli/version";
@@ -56,6 +58,6 @@ debug(
     ["TYPE_LIST_API", TYPE_LIST_API],
     ["UPDATE_COMPONENT_API_ONLINE", UPDATE_COMPONENT_API_ONLINE],
     ["UPDATE_COMPONENT_API_TEST", UPDATE_COMPONENT_API_TEST],
-    ["VALIDATE_COMPONENT_NAME_API", VALIDATE_COMPONENT_NAME_API]
-  ])
+    ["VALIDATE_COMPONENT_NAME_API", VALIDATE_COMPONENT_NAME_API],
+  ]),
 );

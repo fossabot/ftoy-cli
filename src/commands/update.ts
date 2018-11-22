@@ -3,10 +3,10 @@ import * as ora from "ora";
 import { CommandModule } from "yargs";
 import { checkUpdate } from "../process/update.process";
 
-const debug = Debug("[Command] test");
+const debug = Debug("[Command] update");
 
 module.exports = {
-  aliases: ["up"],
+  aliases: ["u"],
   command: "update",
   describe: "检查更新",
   handler: async () => {

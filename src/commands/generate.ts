@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import * as Debug from "debug";
-import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 import { prompt } from "inquirer";
 import * as ora from "ora";
 import { join, resolve } from "path";
@@ -36,7 +36,10 @@ async function askForComponentType(): Promise<{
     })),
   }).then(async ({ componentType }: any) => {
     const hash = createHash("md5");
-    const res = hash.update(Date.now().toString()).digest("hex").slice(0, 6);
+    const res = hash
+      .update(Date.now().toString())
+      .digest("hex")
+      .slice(0, 6);
     const componentName = `toy-${componentType}-${res}`;
     if (Directory.exist(resolve(componentDir, componentName))) {
       spinner.info(`项目目录 ${componentDir} 中已存在 ${componentName} 文件夹`);
@@ -77,9 +80,9 @@ module.exports = {
 
         spinner.start("正在克隆组件...");
         if (!Directory.exist(TMP_COMPONENT_DIR)) {
-          cacheComponents();
+          await cacheComponents();
         }
-        const componentDist = resolve(componentDir, componentName);
+        const componentDist = join(componentDir, componentName);
         Directory.copy(TMP_COMPONENT_DIR, componentDist);
 
         spinner.start("正在更新信息...");
@@ -95,10 +98,10 @@ module.exports = {
 
         spinner.succeed("组件创建成功！\n");
 
-        readdirSync(componentDist, "utf8").forEach((file) => {
+        Directory.readAllSync(componentDist).forEach((file) => {
           spinner.stopAndPersist({
             symbol: "CREATE",
-            text: join(componentDir, componentName, file),
+            text: file,
           });
         });
       }
