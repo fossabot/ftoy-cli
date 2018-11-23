@@ -7,25 +7,31 @@ import { Git } from "./git";
 
 const TEMP_DIR = join("temp", "__git__");
 
-const options = {
+const OPTIONS = {
   encoding: "utf8" as BufferEncoding,
   cwd: TEMP_DIR,
+};
+
+const NO_GIT_OPTIONS = {
+  cwd: "..",
+  encoding: "utf8" as BufferEncoding,
+  stdio: [null, null, null],
 };
 
 describe("[utils] git", () => {
   describe("commit", () => {
     test("[EMPTY]", () => {
-      Command.execSync("git init", options);
-      Command.execSync("git add .", options);
-      Command.execSync("git reset --hard", options);
-      expect(Git.commit("[EMPTY]", options)).toBeUndefined();
+      Command.execSync("git init", OPTIONS);
+      Command.execSync("git add .", OPTIONS);
+      Command.execSync("git reset --hard", OPTIONS);
+      expect(Git.commit("[EMPTY]", OPTIONS)).toBeUndefined();
     });
 
     test("[SUCCESS]", () => {
       echo("-n", `__git_test__ ${Date.now().toLocaleString()}`).to(
         resolve(TEMP_DIR, ".cache"),
       );
-      const result = Git.commit("Commit via Jest", options);
+      const result = Git.commit("Commit via Jest", OPTIONS);
       expect(result).toBeUndefined();
     });
   });
@@ -36,28 +42,24 @@ describe("[utils] git", () => {
       expect(result).toBe("ftoy-cli");
     });
 
+    async function getRepoNameProcess(url) {
+      Directory.delete(resolve(TEMP_DIR, ".git"));
+      Git.init(OPTIONS);
+      await Git.setRemoteUrl(url, OPTIONS);
+      expect(Git.getRepoName(OPTIONS)).rejects.toBe("");
+      Directory.delete(resolve(TEMP_DIR, ".git"));
+    }
+
     test("[EMPTY NO MATCH]", async () => {
-      Directory.delete(resolve(TEMP_DIR, ".git"));
-      Git.init(options);
-      await Git.setRemoteUrl("git@remote_url_test", options);
-      expect(Git.getRepoName(options)).rejects.toBe("");
-      Directory.delete(resolve(TEMP_DIR, ".git"));
+      await getRepoNameProcess("git@remote_url_test");
     });
 
     test("[EMPTY MATCH BUT NO URL]", async () => {
-      Directory.delete(resolve(TEMP_DIR, ".git"));
-      Git.init(options);
-      await Git.setRemoteUrl("git@github.com/.git", options);
-      expect(Git.getRepoName(options)).rejects.toBe("");
-      Directory.delete(resolve(TEMP_DIR, ".git"));
+      await getRepoNameProcess("git@github.com/.git");
     });
 
     test("[FAILED]", () => {
-      const result = Git.getRepoName({
-        cwd: "..",
-        encoding: "utf8",
-        stdio: [null, null, null],
-      });
+      const result = Git.getRepoName(NO_GIT_OPTIONS);
       expect(result).rejects.toBe("");
     });
   });
@@ -69,11 +71,7 @@ describe("[utils] git", () => {
     });
 
     test("[FAILED]", () => {
-      const result = Git.getRemoteUrl({
-        cwd: "..",
-        encoding: "utf8",
-        stdio: [null, null, null],
-      });
+      const result = Git.getRemoteUrl(NO_GIT_OPTIONS);
       expect(result).rejects.toBe("");
     });
   });
@@ -81,19 +79,19 @@ describe("[utils] git", () => {
   describe("setRemoteUrl", () => {
     test("[SUCCESS ADD]", async () => {
       const remote = "git@__remote_test__.git";
-      Git.init(options);
-      await Git.setRemoteUrl(remote, options);
-      expect(await Git.getRemoteUrl(options)).toEqual(remote);
+      Git.init(OPTIONS);
+      await Git.setRemoteUrl(remote, OPTIONS);
+      expect(await Git.getRemoteUrl(OPTIONS)).toEqual(remote);
       Directory.delete(resolve(TEMP_DIR, ".git"));
     });
 
     test("[SUCCESS SET-URL]", async () => {
       const remote = "git@__remote_test__.git";
       const remote2 = "git@__remote_test_2__.git";
-      Git.init(options);
-      await Git.setRemoteUrl(remote, options);
-      await Git.setRemoteUrl(remote2, options);
-      expect(await Git.getRemoteUrl(options)).toEqual(remote2);
+      Git.init(OPTIONS);
+      await Git.setRemoteUrl(remote, OPTIONS);
+      await Git.setRemoteUrl(remote2, OPTIONS);
+      expect(await Git.getRemoteUrl(OPTIONS)).toEqual(remote2);
       Directory.delete(resolve(TEMP_DIR, ".git"));
     });
   });

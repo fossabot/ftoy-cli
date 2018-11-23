@@ -1,0 +1,12 @@
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+ratings:
+  paths:
+  - "**.ts"
+exclude_paths:
+- temp/
+- src/**/*.spec.ts

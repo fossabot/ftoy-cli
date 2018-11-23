@@ -8,12 +8,14 @@ describe("[utils] table", () => {
       );
     });
   });
+
   describe("calTabNum", () => {
     test("should return number", () => {
       expect(calTabNum()).toBe(1);
       expect(calTabNum("中文测试 Head")).toBe(2);
     });
   });
+
   describe("getShowLength", () => {
     test("should return number", () => {
       expect(getShowLength()).toBe(0);
