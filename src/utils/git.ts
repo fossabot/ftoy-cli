@@ -1,6 +1,6 @@
-import Axios, { AxiosError, AxiosResponse } from "axios";
+import Axios, { AxiosResponse } from "axios";
 import { ExecSyncOptionsWithStringEncoding } from "child_process";
-import { NAMESPACE_ID } from "../const";
+import { NAMESPACE } from "../const";
 import { Command } from "./command";
 import { Token } from "./token";
 
@@ -61,28 +61,26 @@ export class Git {
   public static async create(
     name: string,
     {
-      namespace_id = NAMESPACE_ID,
+      namespace = NAMESPACE,
       description = "Create via ftoy-cli.",
-      visibility = "internal" as "private" | "internal" | "public",
+      visibility = "private" as "private" | "internal" | "public",
     } = {},
   ): Promise<string> {
-    const token = await Token.getValue();
     return Axios.post(
       "http://igit.58corp.com/api/v4/projects",
       {
         name,
-        namespace_id,
+        namespace_id: await Git.getGroupId(namespace),
         visibility,
         description,
       },
       {
         headers: {
-          "Private-Token": token,
+          "Private-Token": await Token.getValue(),
         },
       },
     )
-      .then((res: AxiosResponse) => res.data)
-      .catch((err: AxiosError) => Promise.reject(err.message));
+      .then((res: AxiosResponse) => res.data);
   }
 
   /**
@@ -98,7 +96,7 @@ export class Git {
     namespace: string,
     name: string,
   ): Promise<string | object> {
-    const project = [namespace, name].map((e) => encodeURIComponent(e)).join("/");
+    const project = encodeURIComponent([namespace, name].join("/"));
     return Axios.get(`http://igit.58corp.com/api/v4/projects/${project}`, {
       headers: {
         "Private-Token": await Token.getValue(),
@@ -153,9 +151,9 @@ export class Git {
       stdio: [null, null, null],
       encoding: "utf8",
     } as ExecSyncOptionsWithStringEncoding,
-  } = {}): void {
+  } = {}): Promise<string> {
     Git.commit("Commit via ftoy-cli", options);
-    Command.execSync(`git push ${origin} ${branch}`, options);
+    return Command.execp(`git push ${origin} ${branch}`, options);
   }
 
   /**
@@ -272,5 +270,27 @@ export class Git {
   public static get useremail() {
     const res = Command.execSync("git config --get user.email");
     return res.trim();
+  }
+
+  public static async getGroupId(name: string): Promise<number> {
+    return Axios.get(
+      `http://igit.58corp.com/api/v4/groups?search=${encodeURIComponent(name)}`,
+      {
+        headers: {
+          "Private-Token": await Token.getValue(),
+        },
+      },
+    )
+      .then((res: AxiosResponse) => res.data)
+      .then(
+        (data) =>
+          data &&
+          data
+            .filter(
+              (e: { id: number; name: string; path: string }) => e.name === name,
+            )
+            .map((e: { id: number; name: string; path: string }) => e.id)
+            .pop(),
+      );
   }
 }

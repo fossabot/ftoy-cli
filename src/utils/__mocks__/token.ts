@@ -1,5 +1,5 @@
 export class Token {
   public static getValue() {
-    return "";
+    return Promise.resolve("");
   }
 }

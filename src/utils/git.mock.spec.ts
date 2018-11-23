@@ -8,6 +8,18 @@ jest.mock("./token");
 describe("[utils] git (mock)", () => {
   describe("create", () => {
     test("[SUCCESS]", () => {
+      const TOKEN_MOCK_DATA = [
+        {
+          id: 1,
+          name: "Foobar Group",
+          path: "foo-bar",
+          description: "An interesting group",
+        },
+      ];
+      (Axios.get as jest.Mock<any>).mockResolvedValueOnce({
+        data: TOKEN_MOCK_DATA,
+      });
+
       const MOCK_DATA = {
         id: 21266,
         description: null,
@@ -76,10 +88,20 @@ describe("[utils] git (mock)", () => {
     });
 
     test("[FAILED]", () => {
-      const MOCK_MESSAGE = "TEST";
-      (Axios.post as jest.Mock<any>).mockRejectedValueOnce({
-        message: MOCK_MESSAGE,
+      const TOKEN_MOCK_DATA = [
+        {
+          id: 1,
+          name: "Foobar Group",
+          path: "foo-bar",
+          description: "An interesting group",
+        },
+      ];
+      (Axios.get as jest.Mock<any>).mockResolvedValueOnce({
+        data: TOKEN_MOCK_DATA,
       });
+
+      const MOCK_MESSAGE = "TEST";
+      (Axios.post as jest.Mock<any>).mockRejectedValueOnce(MOCK_MESSAGE);
       expect(Git.create("test")).rejects.toEqual(MOCK_MESSAGE);
     });
   });
@@ -135,8 +157,8 @@ describe("[utils] git (mock)", () => {
   });
 
   describe("push", () => {
-    test("[SUCCESS]", () => {
-      Git.push();
+    test("[SUCCESS]", async () => {
+      await Git.push();
     });
   });
 
@@ -149,6 +171,23 @@ describe("[utils] git (mock)", () => {
   describe("isClean", () => {
     test("[SUCCESS]", () => {
       expect(Git.isClean()).toBe(true);
+    });
+  });
+
+  describe("getGroupId", () => {
+    test("[SUCCESS]", () => {
+      const MOCK_DATA = [
+        {
+          id: 1,
+          name: "Foobar",
+          path: "foo-bar",
+          description: "An interesting group",
+        },
+      ];
+      (Axios.get as jest.Mock<any>).mockResolvedValueOnce({
+        data: MOCK_DATA,
+      });
+      expect(Git.getGroupId("Foobar")).resolves.toEqual(1);
     });
   });
 });

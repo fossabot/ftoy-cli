@@ -18,7 +18,7 @@ export async function release(env = "test" as "online" | "test") {
       spinner.start("正在打包组件...");
       await Component.bundle();
       Git.commit("Build via ftoy-cli.");
-      Git.push();
+      await Git.push();
 
       spinner.start("正在读取信息...");
       const allComponents: IComponent[] = await Component.getAllComponents();

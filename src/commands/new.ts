@@ -6,7 +6,7 @@ import * as ora from "ora";
 import { resolve } from "path";
 import { pwd } from "shelljs";
 import { CommandModule } from "yargs";
-import { TMP_PROJECT_DIR } from "../const";
+import { NAMESPACE, TMP_PROJECT_DIR } from "../const";
 import { cacheProjects } from "../utils/cache";
 import { Directory } from "../utils/directory";
 import { Git } from "../utils/git";
@@ -18,7 +18,6 @@ module.exports = {
   command: "new",
   describe: "创建项目",
   handler: async () => {
-    const namespace = "ftoy-cli";
     const spinner = ora();
     try {
       const prefix = "toy-components-";
@@ -31,12 +30,12 @@ module.exports = {
             return "项目名称不能为空哦";
           } else {
             name = prefix + name;
-            const canCreate: boolean = await Git.info(namespace, name).then(
+            const canCreate: boolean = await Git.info(NAMESPACE, name).then(
               () => false,
               () => true,
             );
             if (!canCreate) {
-              return `远程仓库中已存在 ${name} 项目`;
+              return `远程仓库 ${NAMESPACE} 中已存在 ${name} 项目`;
             } else if (Directory.exist(name, "dir")) {
               return `当前目录 ${pwd()} 下已存在 ${name} 文件夹`;
             } else {
@@ -50,6 +49,7 @@ module.exports = {
       const { description = "" }: any = await prompt({
         message: "请输入项目概述：",
         name: "description",
+        default: "Create via ftoy-cli.",
         validate: async (name) => !!name || "项目概述不能为空哦",
       });
 
@@ -58,10 +58,11 @@ module.exports = {
         cwd: projectName,
         stdio: [null, null, null],
       };
+
       spinner.start("正在创建仓库...");
-      const { ssh_url_to_repo }: any = await Git.create(projectName, {
+      const { ssh_url_to_repo = "" }: any = await Git.create(projectName, {
         description,
-      });
+      }).catch(() => spinner.info("创建仓库失败，跳过该步骤，请手动创建远程仓库"));
 
       spinner.start("正在克隆仓库...");
       if (!Directory.exist(TMP_PROJECT_DIR)) {
@@ -92,7 +93,9 @@ module.exports = {
       if (ssh_url_to_repo) {
         spinner.start("正在推送代码...");
         await Git.setRemoteUrl(ssh_url_to_repo, options);
-        Git.push({ options });
+        await Git.push({ options }).catch(() => {
+          spinner.info("推送代码失败，跳过该步骤，请手动推送代码");
+        });
       }
 
       spinner.succeed(`成功创建项目 ${projectName}\n`);

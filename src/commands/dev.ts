@@ -16,7 +16,7 @@ module.exports = {
     try {
       spinner.start("正在打包组件...");
       await Component.bundle().catch((e) => {
-        spinner.info(e.message);
+        spinner.info(e.message || e);
         process.exit();
       });
       spinner.stop();
