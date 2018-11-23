@@ -1,12 +1,11 @@
 import { ExecSyncOptionsWithStringEncoding } from "child_process";
 import { join, resolve } from "path";
-import { echo } from "shelljs";
+import { echo, mkdir } from "shelljs";
 import { Command } from "./command";
 import { Directory } from "./directory";
 import { Git } from "./git";
 
 const TEMP_DIR = join("temp", "__git__");
-
 const OPTIONS = {
   encoding: "utf8" as BufferEncoding,
   cwd: TEMP_DIR,
@@ -19,6 +18,10 @@ const NO_GIT_OPTIONS = {
 };
 
 describe("[utils] git", () => {
+  beforeAll(() => {
+    mkdir("-p", TEMP_DIR);
+  });
+
   describe("commit", () => {
     test("[EMPTY]", () => {
       Command.execSync("git init", OPTIONS);
