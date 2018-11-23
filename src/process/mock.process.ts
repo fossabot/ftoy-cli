@@ -18,6 +18,7 @@ export class MockRouter {
   public router = new KoaRouter();
   public koaPort: number = 0;
   public wsPort: number = 0;
+  public url: string = "";
 
   public async bootstrap() {
     this.koaPort = await getPortPromise({ port: 8000 });
@@ -28,43 +29,9 @@ export class MockRouter {
     this.app.use(KoaStatic("."));
     this.app.use(this.router.routes()).use(this.router.allowedMethods());
 
-    this.app.listen(this.koaPort, () => {
-      const url = `http://ftoy.58corp.com/#/editor/development?port=${
-        this.koaPort
-      }&wss=${this.wsPort}`;
-      process.stdout.write(
-        generateTable([
-          ["服务启动成功", ""],
-          ["服务端口", this.koaPort],
-          ["监听端口", this.wsPort],
-          ["访问地址", url],
-        ]),
-      );
-      const wss = new Server(
-        {
-          port: this.wsPort,
-          perMessageDeflate: false,
-        },
-        () => {
-          Open(url);
-        },
-      );
-      wss.on("connection", (ws) => {
-        if (Directory.exist(Project.distDir)) {
-          const watcher = watch(
-            Project.distDir,
-            {
-              recursive: true,
-              encoding: "utf8",
-            },
-            (event, name) => {
-              ws.send(name);
-            },
-          );
-          ws.on("close", () => watcher.close());
-        }
-      });
-    });
+    await this.startKoaServer();
+    this.initUrl();
+    this.startWSServer();
   }
 
   public async cors(ctx: Koa.Context, next: () => Promise<any>) {
@@ -94,6 +61,52 @@ export class MockRouter {
         );
       ctx.body = allComponents;
     });
+  }
+
+  public startWSServer() {
+    const wss = new Server(
+      {
+        port: this.wsPort,
+        perMessageDeflate: false,
+      },
+      () => Open(this.url),
+    );
+    wss.on("connection", (ws) => {
+      if (Directory.exist(Project.distDir)) {
+        const watcher = watch(
+          Project.distDir,
+          {
+            recursive: true,
+            encoding: "utf8",
+          },
+          (event, name) => ws.send(name),
+        );
+        ws.on("close", () => watcher.close());
+      }
+    });
+  }
+
+  public startKoaServer() {
+    return new Promise((resolve, reject) => {
+      this.app
+        .listen(this.koaPort, () => resolve())
+        .on("error", (e) => reject(e));
+    });
+  }
+
+  public initUrl() {
+    this.url = `http://ftoy.58corp.com/#/editor/development?port=${
+      this.koaPort
+    }&wss=${this.wsPort}`;
+
+    process.stdout.write(
+      generateTable([
+        ["服务启动成功", ""],
+        ["服务端口", this.koaPort],
+        ["监听端口", this.wsPort],
+        ["访问地址", this.url],
+      ]),
+    );
   }
 }
 
