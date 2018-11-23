@@ -28,11 +28,11 @@ describe("[utils] git", () => {
     });
 
     test("[SUCCESS]", () => {
-      echo("-n", `__git_test__ ${Date.now().toLocaleString()}`).to(
-        resolve(TEMP_DIR, ".cache"),
-      );
+      const file = resolve(TEMP_DIR, ".cache");
+      echo("-n", `__git_test__ ${Date.now().toLocaleString()}`).to(file);
       const result = Git.commit("Commit via Jest", OPTIONS);
       expect(result).toBeUndefined();
+      Directory.delete(file);
     });
   });
 
