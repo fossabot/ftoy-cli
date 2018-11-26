@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ChenShihao/ftoy-cli/badge.svg?branch=master)](https://coveralls.io/github/ChenShihao/ftoy-cli?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/77c2d0a16ce878659921/maintainability)](https://codeclimate.com/github/ChenShihao/ftoy-cli/maintainability)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ChenShihao/ftoy-cli.svg?logo=github)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FChenShihao%2Fftoy-cli.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FChenShihao%2Fftoy-cli?ref=badge_shield)
 
 ![dependencies](https://img.shields.io/david/ChenShihao/ftoy-cli.svg?logo=npm)
 ![dev dependencies](https://img.shields.io/david/dev/ChenShihao/ftoy-cli.svg?logo=npm)
@@ -124,3 +125,7 @@ $ ftoy update
 ---
 
 若有使用问题或更好的建议，欢迎 [联系我](mailto:victor_csh@outlook.com) ！
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FChenShihao%2Fftoy-cli.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FChenShihao%2Fftoy-cli?ref=badge_large)
